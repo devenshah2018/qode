@@ -10,16 +10,12 @@ void run_language(const char *file_path) {
         printf("Error: Cannot open file %s\n", file_path);
         return;
     }
-
     char *line = NULL;
     size_t len = 0;
-
-    // Replace getline with fgets for Windows compatibility
-    while (fgets(line, 1024, file)) {  // 1024 is the max line length
-        tokenize(line); // Convert code to tokens
-        // Call parse and execution logic here
+    while (fgets(line, 1024, file)) {  
+        tokenize(line); 
+        
     }
-
     free(line);
     fclose(file);
 }
