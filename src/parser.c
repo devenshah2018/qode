@@ -26,48 +26,36 @@ void free_ast(ASTNode *root) {
 
 ASTNode *parse(Token *tokens, int token_count) {
     int index = 0;
-    ASTNode *head = NULL;
-    ASTNode *current = NULL;
+    ASTNode *head = NULL, *tail = NULL;
+
     while (index < token_count) {
         Token token = tokens[index];
-        ASTNode *node = NULL;  
+        ASTNode *node = NULL;
+        ASTNode *qubit_node = NULL;
         if (token.type == TOKEN_GATE) {
-            node = new_ast_node(NODE_GATE, token.value);
-            index++;  
-            if (tokens[index].type == TOKEN_QUBIT) {
-                
-                node->next = new_ast_node(NODE_GATE, tokens[index].value);
+            ASTNode *gate_node = new_ast_node(NODE_GATE, token.value);
+            if (++index < token_count && tokens[index].type == TOKEN_QUBIT) {
+                qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                gate_node->next = qubit_node;  
             } else {
-                fprintf(stderr, "Error: Expected qubit after gate %s\n", token.value);
-                free_ast(node);
+                fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
+                free_ast(gate_node);
                 return NULL;
             }
-            index++;  
-        } else if (token.type == TOKEN_MEASURE) {
-            node = new_ast_node(NODE_MEASURE, token.value);
-            index++;  
-            if (tokens[index].type == TOKEN_QUBIT) {
-                node->next = new_ast_node(NODE_MEASURE, tokens[index].value);
+
+            
+            if (head == NULL) {
+                head = tail = gate_node;  
             } else {
-                
-                fprintf(stderr, "Error: Expected qubit after measurement\n");
-                free_ast(node);
-                return NULL;
+                tail->next = gate_node;  
+                tail = qubit_node ? qubit_node : gate_node;  
             }
-            index++;  
-        } else if (token.type == TOKEN_SEMICOLON) {
             index++;
-            continue;
         } else {
             fprintf(stderr, "Error: Unexpected token %s\n", token.value);
             return NULL;
         }
-        if (head == NULL) {
-            head = current = node;
-        } else {
-            current->next = node;
-            current = node;
-        }
     }
     return head;
 }
+

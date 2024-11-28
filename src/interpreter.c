@@ -10,12 +10,27 @@ void run_language(const char *file_path) {
         printf("Error: Cannot open file %s\n", file_path);
         return;
     }
-    char *line = NULL;
-    size_t len = 0;
-    while (fgets(line, 1024, file)) {  
-        tokenize(line); 
-        
-    }
+    char *line = malloc(1024);
+    int token_count = 0;
+    Token *tokens = NULL;
+
+    while (fgets(line, 1024, file)) {
+        printf("Processing: %s", line);
+        tokens = lexer(line, &token_count);
+        ASTNode *ast = parse(tokens, token_count);
+        ASTNode *current = ast;
+        while (current) {
+            printf("Node Type: %d, Value: %s\n", current->type, current->value);
+            current = current->next;
+        }
+        free_ast(ast);
+        for (int i = 0; i < token_count; i++) {
+            free(tokens[i].value);  
+        }
+            free(tokens); 
+        }
+
     free(line);
     fclose(file);
 }
+

@@ -4,7 +4,8 @@
 
 typedef enum {
     NODE_GATE,           
-    NODE_MEASURE         
+    NODE_MEASURE,
+    NODE_QUBIT     
 } NodeType;
 
 typedef struct ASTNode {

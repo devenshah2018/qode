@@ -1,4 +1,4 @@
-
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,45 +6,33 @@
 
 
 Token *lexer(const char *code, int *token_count) {
-    Token *tokens = malloc(100 * sizeof(Token));
+    Token *tokens = malloc(100 * sizeof(Token));  
     *token_count = 0;
-    char *token_value = malloc(100 * sizeof(char));
-    int token_index = 0;
-    int i = 0;
-    while (code[i] != '\0') {
-        if (code[i] == ' ' || code[i] == '\n' || code[i] == '\t') {
-            i++;
-            continue;
-        }
-        if (code[i] == 'X' || code[i] == 'H' || code[i] == 'C' || code[i] == 'M') {
+    const char *delimiters = " \t\n;";
+    char *code_copy = strdup(code);  
+    char *token_str = strtok(code_copy, delimiters);
+
+    while (token_str != NULL) {
+        if (strcmp(token_str, "X") == 0 || strcmp(token_str, "H") == 0 || strcmp(token_str, "M") == 0) {
             tokens[*token_count].type = TOKEN_GATE;
-            tokens[*token_count].value = strdup(&code[i]);
-            (*token_count)++;
-            i++;
-        } else if (code[i] == 'q' && code[i + 1] >= '0' && code[i + 1] <= '9') {
-            int j = 0;
-            token_value[j++] = code[i++];
-            while (code[i] >= '0' && code[i] <= '9') {
-                token_value[j++] = code[i++];
-            }
-            token_value[j] = '\0';
+        } else if (token_str[0] == 'q' && isdigit(token_str[1])) {
             tokens[*token_count].type = TOKEN_QUBIT;
-            tokens[*token_count].value = strdup(token_value);
-            (*token_count)++;
-        } else if (code[i] == ';') {
-            tokens[*token_count].type = TOKEN_SEMICOLON;
-            tokens[*token_count].value = strdup(";");
-            (*token_count)++;
-            i++;
         } else {
-            tokens[*token_count].type = TOKEN_ERROR;
-            tokens[*token_count].value = strdup("ERROR");
-            (*token_count)++;
-            i++;
+            tokens[*token_count].type = TOKEN_UNKNOWN;
         }
+        
+        
+        tokens[*token_count].value = strdup(token_str);
+        (*token_count)++;
+
+        
+        token_str = strtok(NULL, delimiters);
     }
-    return tokens;
+
+    free(code_copy);  
+    return tokens;  
 }
+
 
 void tokenize(const char *code) {
     printf("Tokenizing code: %s\n", code);

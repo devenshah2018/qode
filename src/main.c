@@ -10,14 +10,16 @@ int main() {
     Token *tokens = lexer(code, &token_count);
     ASTNode *ast = parse(tokens, token_count);
     ASTNode *current = ast;
+
     while (current != NULL) {
         printf("Node Type: %d, Value: %s\n", current->type, current->value);
         current = current->next;
     }
-    free_ast(ast);
+
+    free_ast(ast);  
     for (int i = 0; i < token_count; i++) {
-        free(tokens[i].value);
+        free(tokens[i].value);  
     }
-    free(tokens);
+    free(tokens);  
     return 0;
 }

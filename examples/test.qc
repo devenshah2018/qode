@@ -1,3 +1,4 @@
-qbit q1
-H(q1)
-measure(q1)
+!X .q1;
+!H q2;
+#M q3;
+#P q2;
