@@ -115,3 +115,16 @@ q3;
     ```
 
     This will execute the `test.qc` script located in the `examples` directory using the compiled interpreter.
+
+---
+
+### Reference
+
+**Gates**
+- Hadamard Gate: `!H [qubit]`
+- Pauli-X Gate: `!X [qubit]`
+
+**Built-In Functions**
+- Measure Qubit: `#M [qubit]`; `#MO` will output the measurement to the console.
+- Superposition Probability Vector: `#P [qubit]`; `#PO` will output the vector to the console.
+- Print Text: `#> [text]`
