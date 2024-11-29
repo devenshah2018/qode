@@ -31,16 +31,11 @@ In Qode, comments are used to annotate the code, providing explanations or notes
 
 ***Qubit Initialization Syntax***
 
-In Qode, qubits are prefixed with `q`, followed by the name of the qubit. *Qubits must be initialized before applying gates or functions.* Qubits are initialized to the ∣0⟩ state by default unless explicitly defined using the `.` prefix. 
+In Qode, qubits are prefixed with `q`, followed by the name of the qubit. *Qubits must be initialized before applying gates or functions.* Qubits are initialized to the ∣0⟩ state by default.
 
 - **Default Initialization**
     ```
     q1;  // q1 starts in |0⟩
-    ```
-
-- **Custom Initialization**
-    ```
-    .q2;  // q2 starts in |1⟩
     ```
 
 ***Function Syntax***
@@ -83,12 +78,10 @@ Below is an example script illustrating Qode’s functionality:
 ```
 // Initialize qubits
 q1;         // q1 starts in |0⟩
-.q2;        // q2 starts in |1⟩
-q3;
 
 // Apply gates
 !X q1;      // Apply Pauli-X to q1
-!H .q2;     // Apply Hadamard to q2
+!H q2;     // Apply Hadamard to q2
 !H q3;      // Apply Hadamard to q3
 
 // Perform operations
@@ -125,6 +118,6 @@ q3;
 - Pauli-X Gate: `!X [qubit]`
 
 **Built-In Functions**
-- Measure Qubit: `#M [qubit]`; `#MO` will output the measurement to the console.
-- Superposition Probability Vector: `#P [qubit]`; `#PO` will output the vector to the console.
+- Measure Qubit: `#M [qubit]`
+- Superposition Probability Vector: `#P [qubit]`
 - Print Text: `#> [text]`

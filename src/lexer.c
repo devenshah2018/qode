@@ -11,8 +11,10 @@ Token *lexer(const char *code, int *token_count) {
     char *code_copy = strdup(code);  
     char *token_str = strtok(code_copy, delimiters);
     while (token_str != NULL) {
-        if (token_str[0] == '!') {
-            tokens[*token_count].type = TOKEN_GATE;
+        if (token_str[0] == '!' && token_str[1] == 'H') {
+            tokens[*token_count].type = TOKEN_HADAMARD_GATE;
+        } else if (token_str[0] == '!' && token_str[1] == 'X') {
+            tokens[*token_count].type = TOKEN_X_GATE;
         } else if (token_str[0] == 'q') {
             tokens[*token_count].type = TOKEN_QUBIT;
         } else if (token_str[0] == '#' && token_str[1] == '>') {
@@ -28,23 +30,4 @@ Token *lexer(const char *code, int *token_count) {
     }
     free(code_copy);  
     return tokens;  
-}
-
-void tokenize(const char *code) {
-    printf("Tokenizing code: %s\n", code);
-    Token token;
-    if (strcmp(code, "!") == 0) {
-        token.type = TOKEN_GATE;
-        token.value = strdup(code);
-    } else if (strcmp(code, "q1") == 0) {
-        token.type = TOKEN_QUBIT;
-        token.value = strdup(code);
-    } else if (strcmp(code, "M") == 0) {
-        token.type = TOKEN_MEASURE;
-        token.value = strdup(code);
-    } else {
-        token.type = TOKEN_UNKNOWN;
-        token.value = strdup(code);
-    }
-    printf("Token type: %d, Token value: %s\n", token.type, token.value);
 }

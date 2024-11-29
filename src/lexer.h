@@ -4,6 +4,5 @@
 #include "token.h"  
 
 Token *lexer(const char *code, int *token_count);
-void tokenize(const char *code); 
 
 #endif

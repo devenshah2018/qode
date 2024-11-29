@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "token.h"
 #include "lexer.h"
+#include "quantum.h"
 
 ASTNode *new_ast_node(NodeType type, const char *value) {
     ASTNode *node = (ASTNode *)malloc(sizeof(ASTNode));
@@ -34,24 +35,48 @@ ASTNode *parse(Token *tokens, int token_count) {
         ASTNode *node = NULL;
         ASTNode *qubit_node = NULL;
         ASTNode *text_node = NULL;
-        if (token.type == TOKEN_GATE) {  
-            ASTNode *gate_node = new_ast_node(NODE_GATE, token.value);
+        if (token.type == TOKEN_HADAMARD_GATE) {  
+            ASTNode *hadamard_node = new_ast_node(NODE_GATE, token.value);
             if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
                 qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
-                gate_node->next = qubit_node;  
+                qubit_node->state[0] = 1.0;
+                qubit_node->state[1] = 0.0;
+                apply_hadamard(qubit_node);
+                hadamard_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
-                free_ast(gate_node);
+                free_ast(hadamard_node);
                 return NULL;  
             }
             if (head == NULL) {  
-                head = gate_node;  
-                tail = qubit_node ? qubit_node : gate_node;  
+                head = hadamard_node;  
+                tail = qubit_node ? qubit_node : hadamard_node;  
             } else {
-                tail->next = gate_node;  
-                tail = qubit_node ? qubit_node : gate_node;  
+                tail->next = hadamard_node;  
+                tail = qubit_node ? qubit_node : hadamard_node;  
             }
-            index++;  
+            index++;
+        } else if (token.type == TOKEN_X_GATE) {
+            ASTNode *x_node = new_ast_node(NODE_GATE, token.value);
+            if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
+                qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                qubit_node->state[0] = 1.0;
+                qubit_node->state[1] = 0.0;
+                apply_pauli_x(qubit_node);
+                x_node->next = qubit_node;  
+            } else {
+                fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
+                free_ast(x_node);
+                return NULL;  
+            }
+            if (head == NULL) {  
+                head = x_node;  
+                tail = qubit_node ? qubit_node : x_node;  
+            } else {
+                tail->next = x_node;  
+                tail = qubit_node ? qubit_node : x_node;  
+            }
+            index++;
         } else if (token.type == TOKEN_PRINT_FUNCTION){ 
             ASTNode *print_node = new_ast_node(NODE_PRINT_FUNCTION, token.value);
             if (++index < token_count && (tokens[index].type == TOKEN_TEXT)) {  
