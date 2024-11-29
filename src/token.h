@@ -3,9 +3,12 @@
 
 typedef enum {
     TOKEN_UNKNOWN,
-    TOKEN_GATE,           
-    TOKEN_QUBIT,          
-    TOKEN_MEASURE,        
+    TOKEN_QUBIT,
+    TOKEN_TEXT,
+    TOKEN_PRINT_FUNCTION,
+    TOKEN_GATE,   
+    TOKEN_BUILTIN,        
+    TOKEN_MEASURE,
     TOKEN_IDENTIFIER,     
     TOKEN_SEMICOLON,      
     TOKEN_END,            
