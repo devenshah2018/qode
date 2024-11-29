@@ -12,8 +12,7 @@ Qode is a lightweight, interpreted quantum programming language designed for eff
 
 Qode uses prefixes to differentiate commands, ensuring a clear and structured syntax. Here’s a quick guide:
 
-- `.` **(Qubit Initialization)**: Specifies a qubit’s starting state as ∣1⟩. Without it, the qubit defaults to ∣0⟩. 
-    - Example: `.q2`; initializes `q2` to ∣1⟩.
+- `q` **(Qubit Initialization)**: Specifies a qubit, with its starting state as ∣0⟩.
 
 - `!` **(Quantum Gates)**: Applies quantum operations to qubits.
     - Example: `!H q1`; applies a Hadamard gate to `q1`.
