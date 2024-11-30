@@ -8,6 +8,7 @@ typedef enum {
     TOKEN_PRINT_FUNCTION,
     TOKEN_H_GATE,
     TOKEN_X_GATE,
+    TOKEN_I_GATE,
     TOKEN_COMMENT  
 } TokenType;
 

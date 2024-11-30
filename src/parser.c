@@ -99,6 +99,38 @@ ASTNode *parse(Token *tokens, int token_count) {
                 tail = qubit_node ? qubit_node : x_node;  
             }
             index++;
+        } else if (token.type == TOKEN_I_GATE) {
+            ASTNode *identity_node = new_ast_node(NODE_I_GATE, token.value);
+            if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
+                qubit_node = NULL;
+                ASTNode *current = head;
+                while (current != NULL) {
+                    if (current->type == NODE_QUBIT && strcmp(current->value, tokens[index].value) == 0) {
+                        qubit_node = current;
+                        break;
+                    }
+                    current = current->next;
+                }
+                if (qubit_node == NULL) {
+                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                    qubit_node->state[0] = 1.0;
+                    qubit_node->state[1] = 0.0;
+                }
+                apply_i_gate(qubit_node);
+                identity_node->next = qubit_node;  
+            } else {
+                fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
+                free_ast(identity_node);
+                return NULL;  
+            }
+            if (head == NULL) {  
+                head = identity_node;  
+                tail = qubit_node ? qubit_node : identity_node;  
+            } else {
+                tail->next = identity_node;  
+                tail = qubit_node ? qubit_node : identity_node;  
+            }
+            index++;
         } else if (token.type == TOKEN_COMMENT) {
             ASTNode *comment_node = new_ast_node(NODE_COMMENT, token.value);
             if (head == NULL) {  

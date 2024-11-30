@@ -6,4 +6,6 @@ void apply_h_gate(ASTNode *qubit_node);
 
 void apply_x_gate(ASTNode *qubit_node);
 
+void apply_i_gate(ASTNode *qubit_node);
+
 #endif

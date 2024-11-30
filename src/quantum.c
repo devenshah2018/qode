@@ -13,14 +13,18 @@ void apply_h_gate(ASTNode *qubit_node) {
     double beta_prob = pow(new_beta, 2);
     qubit_node->state[0] = alpha_prob;
     qubit_node->state[1] = beta_prob;
-    printf("Hadamard gate applied to %s. Alpha Probability: %f. Beta Probability: %f\n", qubit_node->value, qubit_node->state[0], qubit_node->state[1]);
+    printf("Hadamard gate applied to %s.\n", qubit_node->value);
 }
 
 void apply_x_gate(ASTNode *qubit_node) {
     double temp = qubit_node->state[0];
     qubit_node->state[0] = qubit_node->state[1];
     qubit_node->state[1] = temp;
-    printf("Pauli-X gate applied to %s. Alpha Probability: %f. Beta Probability: %f\n", qubit_node->value, qubit_node->state[0], qubit_node->state[1]);
+    printf("Pauli-X gate applied to %s.\n", qubit_node->value);
+}
+
+void apply_i_gate(ASTNode *qubit_node) {
+    printf("Identity gate applied to %s. Alpha Probability: %f. Beta Probability: %f\n", qubit_node->value, qubit_node->state[0], qubit_node->state[1]);
 }
 
 

@@ -9,6 +9,7 @@ typedef enum {
     NODE_PRINT_FUNCTION,
     NODE_H_GATE,
     NODE_X_GATE,
+    NODE_I_GATE,
     NODE_COMMENT,
 } NodeType;
 
