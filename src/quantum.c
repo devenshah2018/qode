@@ -3,7 +3,7 @@
 #include "quantum.h"
 #include "parser.h"
 
-void apply_hadamard(ASTNode *qubit_node) {
+void apply_h_gate(ASTNode *qubit_node) {
     if (qubit_node == NULL) return;
     double alpha = qubit_node->state[0];
     double beta = qubit_node->state[1];
@@ -16,7 +16,7 @@ void apply_hadamard(ASTNode *qubit_node) {
     printf("Hadamard gate applied to %s. Alpha Probability: %f. Beta Probability: %f\n", qubit_node->value, qubit_node->state[0], qubit_node->state[1]);
 }
 
-void apply_pauli_x(ASTNode *qubit_node) {
+void apply_x_gate(ASTNode *qubit_node) {
     double temp = qubit_node->state[0];
     qubit_node->state[0] = qubit_node->state[1];
     qubit_node->state[1] = temp;

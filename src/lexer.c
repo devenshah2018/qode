@@ -24,7 +24,7 @@ Token *lexer(const char *code, int *token_count) {
     char *token_str = strtok(code_copy, delimiters);
     while (token_str != NULL) {
         if (token_str[0] == '!' && token_str[1] == 'H') {
-            tokens[*token_count].type = TOKEN_HADAMARD_GATE;
+            tokens[*token_count].type = TOKEN_H_GATE;
         } else if (token_str[0] == '!' && token_str[1] == 'X') {
             tokens[*token_count].type = TOKEN_X_GATE;
         } else if (token_str[0] == 'q') {
