@@ -95,7 +95,7 @@ q1;         // q1 starts in |0⟩
 1. To build the compiler, execute the following:
 
     ```
-    gcc ./src/lexer.c ./src/parser.c ./src/interpreter.c ./src/main.c -o ./build/quantum_interpreter
+    gcc ./src/lexer.c ./src/parser.c ./src/main.c ./src/quantum.c  -o ./build/quantum_interpreter
     ```
 
     This will compile the source code and generate the `quantum_interpreter` executable in the `./build` directory.

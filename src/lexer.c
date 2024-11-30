@@ -4,6 +4,18 @@
 #include <string.h>
 #include "token.h"
 
+#ifndef strndup
+char *strndup(const char *s, size_t len) {
+    char *copy = (char *)malloc(len + 1);
+    if (copy == NULL) {
+        return NULL; 
+    }
+    strncpy(copy, s, len);
+    copy[len] = '\0'; 
+    return copy;
+}
+#endif
+
 Token *lexer(const char *code, int *token_count) {
     Token *tokens = malloc(100 * sizeof(Token));  
     *token_count = 0;
@@ -19,7 +31,14 @@ Token *lexer(const char *code, int *token_count) {
             tokens[*token_count].type = TOKEN_QUBIT;
         } else if (token_str[0] == '#' && token_str[1] == '>') {
             tokens[*token_count].type = TOKEN_PRINT_FUNCTION;
-        } else if (isalpha(token_str[0]) || isdigit(token_str[0]) || ispunct(token_str[0])) {
+        } else if (token_str[0] == '[') {
+            char *end_bracket = strchr(token_str, ']');
+            if (end_bracket != NULL) {
+                size_t comment_length = end_bracket - token_str - 1;
+                tokens[*token_count].type = TOKEN_COMMENT;
+                tokens[*token_count].value = strndup(token_str + 1, comment_length); 
+            }
+        } else if (token_str[0] == '$') {
             tokens[*token_count].type = TOKEN_TEXT;
         } else {
             tokens[*token_count].type = TOKEN_UNKNOWN;

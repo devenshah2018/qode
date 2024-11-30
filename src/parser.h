@@ -7,7 +7,9 @@ typedef enum {
     NODE_QUBIT,
     NODE_TEXT,
     NODE_PRINT_FUNCTION,
-    NODE_GATE,
+    NODE_HADAMARD_GATE,
+    NODE_X_GATE,
+    NODE_COMMENT,
     NODE_BUILTIN,        
     NODE_MEASURE
 } NodeType;
