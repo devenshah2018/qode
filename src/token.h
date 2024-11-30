@@ -8,12 +8,7 @@ typedef enum {
     TOKEN_PRINT_FUNCTION,
     TOKEN_H_GATE,
     TOKEN_X_GATE,
-    TOKEN_COMMENT,
-    TOKEN_MEASURE,
-    TOKEN_IDENTIFIER,     
-    TOKEN_SEMICOLON,      
-    TOKEN_END,            
-    TOKEN_ERROR           
+    TOKEN_COMMENT  
 } TokenType;
 
 typedef struct {

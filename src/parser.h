@@ -10,8 +10,6 @@ typedef enum {
     NODE_H_GATE,
     NODE_X_GATE,
     NODE_COMMENT,
-    NODE_BUILTIN,        
-    NODE_MEASURE
 } NodeType;
 
 typedef struct ASTNode {

@@ -23,3 +23,4 @@ void apply_x_gate(ASTNode *qubit_node) {
     printf("Pauli-X gate applied to %s. Alpha Probability: %f. Beta Probability: %f\n", qubit_node->value, qubit_node->state[0], qubit_node->state[1]);
 }
 
+
