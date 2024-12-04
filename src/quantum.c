@@ -28,12 +28,16 @@ void apply_h_gate(ASTNode *qubit_node) {
 
 void apply_x_gate(ASTNode *qubit_node) {
     if (qubit_node == NULL) return;
-    double temp = qubit_node->state[0];
-    qubit_node->state[0] = qubit_node->state[2];
-    qubit_node->state[2] = temp;
-    normalize_state(qubit_node->state);
+    double temp_real = qubit_node->state[0];  
+    double temp_imag = qubit_node->state[1];  
+    qubit_node->state[0] = qubit_node->state[2];  
+    qubit_node->state[1] = qubit_node->state[3];  
+    qubit_node->state[2] = temp_real;  
+    qubit_node->state[3] = temp_imag;  
+    normalize_state(qubit_node->state);  
     printf("Pauli-X gate applied to %s.\n", qubit_node->value);
 }
+
 
 void apply_i_gate(ASTNode *qubit_node) {
     printf("Identity gate applied to %s. Alpha Probability (Real): %f. Alpha Probability (Complex): %f. Beta Probability (Real): %f. Beta Probability (Complex): %f\n", qubit_node->value, qubit_node->state[0], qubit_node->state[1], qubit_node->state[2], qubit_node->state[3]);
