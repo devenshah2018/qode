@@ -25,6 +25,8 @@ Token *lexer(const char *code, int *token_count) {
     while (token_str != NULL) {
         if (token_str[0] == '!' && token_str[1] == 'H') {
             tokens[*token_count].type = TOKEN_H_GATE;
+        } else if (strncmp(token_str, "TERM", 4) == 0) {
+            tokens[*token_count].type = TOKEN_TERMINATE;
         } else if (token_str[0] == '!' && token_str[1] == 'X') {
             tokens[*token_count].type = TOKEN_X_GATE;
         } else if (token_str[0] == '!' && token_str[1] == 'I') {

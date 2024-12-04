@@ -12,6 +12,7 @@ typedef enum {
     NODE_I_GATE,
     NODE_Y_GATE,
     NODE_COMMENT,
+    NODE_TERMINATE
 } NodeType;
 
 typedef struct ASTNode {

@@ -200,6 +200,18 @@ ASTNode *parse(Token *tokens, int token_count) {
                 tail = text_node ? text_node : print_node;  
             }
             index++;
+        } else if (token.type == TOKEN_TERMINATE){ 
+            ASTNode *print_node = new_ast_node(NODE_TERMINATE, token.value);
+            if (head == NULL) {  
+                head = print_node;  
+                tail = text_node ? text_node : print_node;  
+            } else {
+                tail->next = print_node;  
+                tail = text_node ? text_node : print_node;  
+            }
+            printf("Terminated.");
+            free_ast(head);
+            exit(0);
         } else {
             return head;  
         }

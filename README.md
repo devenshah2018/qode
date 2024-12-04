@@ -65,6 +65,12 @@ In Qode, qubits are prefixed with `q`, followed by the name of the qubit. *Qubit
         ```
         !X q1
         ```
+    
+    - **Pauli-Y Gate** (`!Y`): Applies a phase and flips the state of the qubit.
+
+        ```
+        !Y q1
+        ```
 
 2. Built-In Functions
 
@@ -74,6 +80,12 @@ In Qode, qubits are prefixed with `q`, followed by the name of the qubit. *Qubit
 
         ```
         #> $Hello_World
+        ```
+    
+    - **Terminate** (`TERM`): Terminates the script.
+
+        ```
+        TERM
         ```
 
 ---
@@ -90,12 +102,13 @@ q1         [q1 starts in |0⟩]
 !X q1      [Apply Pauli-X to q1]
 !H q2      [Apply Hadamard to q2]
 !H q3      [Apply Hadamard to q3]
+TERM
 ```
 
 Alternatively, the logic can be written on a single line as well for conciseness:
 
 ```
-!X q1 !I q1 !H q1 !I q1
+!X q1 !I q1 !H q1 !I q1 TERM
 ```
 
 ---
@@ -126,6 +139,8 @@ Alternatively, the logic can be written on a single line as well for conciseness
 - Identitiy Gate: `!I [qubit]`
 - Hadamard Gate: `!H [qubit]`
 - Pauli-X Gate: `!X [qubit]`
+- Pauli-Y Gate: `!Y [qubit]`
 
 **Built-In Functions**
 - Output Text: `#> [text]`
+- Terminate: `TERM`

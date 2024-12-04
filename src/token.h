@@ -10,7 +10,8 @@ typedef enum {
     TOKEN_X_GATE,
     TOKEN_I_GATE,
     TOKEN_Y_GATE,
-    TOKEN_COMMENT  
+    TOKEN_COMMENT,
+    TOKEN_TERMINATE
 } TokenType;
 
 typedef struct {
