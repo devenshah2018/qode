@@ -71,6 +71,12 @@ In Qode, qubits are prefixed with `q`, followed by the name of the qubit. *Qubit
         ```
         !Y q1
         ```
+    
+    - **Pauli-Z Gate** (`!Z`): Applies a phase shift of π to the qubit state.
+
+        ```
+        !Z q1
+        ```
 
 2. Built-In Functions
 
@@ -140,6 +146,7 @@ Alternatively, the logic can be written on a single line as well for conciseness
 - Hadamard Gate: `!H [qubit]`
 - Pauli-X Gate: `!X [qubit]`
 - Pauli-Y Gate: `!Y [qubit]`
+- Pauli-Z Gate: `!Z [qubit]`
 
 **Built-In Functions**
 - Output Text: `#> [text]`

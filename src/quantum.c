@@ -52,3 +52,17 @@ void apply_y_gate(ASTNode *qubit_node) {
     normalize_state(qubit_node->state);
     printf("Pauli-Y gate applied to %s.\n", qubit_node->value);
 }
+
+void apply_z_gate(ASTNode *qubit_node) {
+    if (qubit_node == NULL) return;
+    double complex alpha = qubit_node->state[0] + qubit_node->state[1] * I;
+    double complex beta = qubit_node->state[2] + qubit_node->state[3] * I;
+    double complex new_alpha = alpha; 
+    double complex new_beta = -beta;  
+    qubit_node->state[0] = creal(new_alpha);
+    qubit_node->state[1] = cimag(new_alpha);
+    qubit_node->state[2] = creal(new_beta);
+    qubit_node->state[3] = cimag(new_beta);
+    normalize_state(qubit_node->state);
+    printf("Pauli-Z gate applied to %s.\n", qubit_node->value);
+}
