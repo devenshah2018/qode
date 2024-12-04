@@ -9,6 +9,7 @@ typedef enum {
     TOKEN_H_GATE,
     TOKEN_X_GATE,
     TOKEN_I_GATE,
+    TOKEN_Y_GATE,
     TOKEN_COMMENT  
 } TokenType;
 

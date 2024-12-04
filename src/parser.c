@@ -51,6 +51,8 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
                     qubit_node->state[0] = 1.0;
                     qubit_node->state[1] = 0.0;
+                    qubit_node->state[2] = 0.0;
+                    qubit_node->state[3] = 0.0;
                 }
                 apply_h_gate(qubit_node);
                 hadamard_node->next = qubit_node;  
@@ -83,6 +85,8 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
                     qubit_node->state[0] = 1.0;
                     qubit_node->state[1] = 0.0;
+                    qubit_node->state[2] = 0.0;
+                    qubit_node->state[3] = 0.0;
                 }
                 apply_x_gate(qubit_node);
                 x_node->next = qubit_node;  
@@ -115,6 +119,8 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
                     qubit_node->state[0] = 1.0;
                     qubit_node->state[1] = 0.0;
+                    qubit_node->state[2] = 0.0;
+                    qubit_node->state[3] = 0.0;
                 }
                 apply_i_gate(qubit_node);
                 identity_node->next = qubit_node;  
@@ -129,6 +135,40 @@ ASTNode *parse(Token *tokens, int token_count) {
             } else {
                 tail->next = identity_node;  
                 tail = qubit_node ? qubit_node : identity_node;  
+            }
+            index++;
+        } else if (token.type == TOKEN_Y_GATE) {
+            ASTNode *y_node = new_ast_node(NODE_Y_GATE, token.value);
+            if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
+                qubit_node = NULL;
+                ASTNode *current = head;
+                while (current != NULL) {
+                    if (current->type == NODE_QUBIT && strcmp(current->value, tokens[index].value) == 0) {
+                        qubit_node = current;
+                        break;
+                    }
+                    current = current->next;
+                }
+                if (qubit_node == NULL) {
+                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                    qubit_node->state[0] = 1.0;
+                    qubit_node->state[1] = 0.0;
+                    qubit_node->state[2] = 0.0;
+                    qubit_node->state[3] = 0.0;
+                }
+                apply_y_gate(qubit_node);
+                y_node->next = qubit_node;  
+            } else {
+                fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
+                free_ast(y_node);
+                return NULL;  
+            }
+            if (head == NULL) {  
+                head = y_node;  
+                tail = qubit_node ? qubit_node : y_node;  
+            } else {
+                tail->next = y_node;  
+                tail = qubit_node ? qubit_node : y_node;  
             }
             index++;
         } else if (token.type == TOKEN_COMMENT) {

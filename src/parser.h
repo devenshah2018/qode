@@ -10,6 +10,7 @@ typedef enum {
     NODE_H_GATE,
     NODE_X_GATE,
     NODE_I_GATE,
+    NODE_Y_GATE,
     NODE_COMMENT,
 } NodeType;
 
@@ -17,7 +18,7 @@ typedef struct ASTNode {
     NodeType type;
     char *value;            
     struct ASTNode *next;   
-    double state[2];
+    double state[4];
 } ASTNode;
 
 ASTNode *parse(Token *tokens, int token_count);
