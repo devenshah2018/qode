@@ -16,6 +16,7 @@ typedef enum {
 } NodeType;
 
 typedef struct ASTNode {
+    double id;
     NodeType type;
     char *value;            
     struct ASTNode *next;   
@@ -23,7 +24,7 @@ typedef struct ASTNode {
 } ASTNode;
 
 ASTNode *parse(Token *tokens, int token_count);
-ASTNode *new_ast_node(NodeType type, const char *value);
+ASTNode *new_ast_node(NodeType type, const char *value, double id);
 void free_ast(ASTNode *root);
 
 #endif

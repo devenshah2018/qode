@@ -6,12 +6,13 @@
 #include "lexer.h"
 #include "quantum.h"
 
-ASTNode *new_ast_node(NodeType type, const char *value) {
+ASTNode *new_ast_node(NodeType type, const char *value, double id) {
     ASTNode *node = (ASTNode *)malloc(sizeof(ASTNode));
     if (node == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(1);
     }
+    node->id = id;
     node->type = type;
     node->value = strdup(value);
     node->next = NULL;
@@ -36,7 +37,7 @@ ASTNode *parse(Token *tokens, int token_count) {
         ASTNode *qubit_node = NULL;
         ASTNode *text_node = NULL;
         if (token.type == TOKEN_H_GATE) {  
-            ASTNode *hadamard_node = new_ast_node(NODE_H_GATE, token.value);
+            ASTNode *hadamard_node = new_ast_node(NODE_H_GATE, token.value, index);
             if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
                 qubit_node = NULL;
                 ASTNode *current = head;
@@ -48,7 +49,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     current = current->next;
                 }
                 if (qubit_node == NULL) {
-                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                     qubit_node->state[0] = 1.0;
                     qubit_node->state[1] = 0.0;
                     qubit_node->state[2] = 0.0;
@@ -65,12 +66,12 @@ ASTNode *parse(Token *tokens, int token_count) {
                 head = hadamard_node;  
                 tail = qubit_node ? qubit_node : hadamard_node;  
             } else {
-                tail->next = hadamard_node;  
+                tail->next = NULL;  
                 tail = qubit_node ? qubit_node : hadamard_node;  
             }
             index++;
         } else if (token.type == TOKEN_X_GATE) {
-            ASTNode *x_node = new_ast_node(NODE_X_GATE, token.value);
+            ASTNode *x_node = new_ast_node(NODE_X_GATE, token.value, index);
             if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
                 qubit_node = NULL;
                 ASTNode *current = head;
@@ -82,7 +83,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     current = current->next;
                 }
                 if (qubit_node == NULL) {
-                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                     qubit_node->state[0] = 1.0;
                     qubit_node->state[1] = 0.0;
                     qubit_node->state[2] = 0.0;
@@ -99,12 +100,12 @@ ASTNode *parse(Token *tokens, int token_count) {
                 head = x_node;  
                 tail = qubit_node ? qubit_node : x_node;  
             } else {
-                tail->next = x_node;  
+                tail->next = NULL;  
                 tail = qubit_node ? qubit_node : x_node;  
             }
             index++;
         } else if (token.type == TOKEN_I_GATE) {
-            ASTNode *identity_node = new_ast_node(NODE_I_GATE, token.value);
+            ASTNode *identity_node = new_ast_node(NODE_I_GATE, token.value, index);
             if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
                 qubit_node = NULL;
                 ASTNode *current = head;
@@ -116,7 +117,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     current = current->next;
                 }
                 if (qubit_node == NULL) {
-                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                     qubit_node->state[0] = 1.0;
                     qubit_node->state[1] = 0.0;
                     qubit_node->state[2] = 0.0;
@@ -133,12 +134,12 @@ ASTNode *parse(Token *tokens, int token_count) {
                 head = identity_node;  
                 tail = qubit_node ? qubit_node : identity_node;  
             } else {
-                tail->next = identity_node;  
+                tail->next = NULL;  
                 tail = qubit_node ? qubit_node : identity_node;  
             }
             index++;
         } else if (token.type == TOKEN_Y_GATE) {
-            ASTNode *y_node = new_ast_node(NODE_Y_GATE, token.value);
+            ASTNode *y_node = new_ast_node(NODE_Y_GATE, token.value, index);
             if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
                 qubit_node = NULL;
                 ASTNode *current = head;
@@ -150,7 +151,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     current = current->next;
                 }
                 if (qubit_node == NULL) {
-                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value);
+                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                     qubit_node->state[0] = 1.0;
                     qubit_node->state[1] = 0.0;
                     qubit_node->state[2] = 0.0;
@@ -167,24 +168,24 @@ ASTNode *parse(Token *tokens, int token_count) {
                 head = y_node;  
                 tail = qubit_node ? qubit_node : y_node;  
             } else {
-                tail->next = y_node;  
+                tail->next = NULL;  
                 tail = qubit_node ? qubit_node : y_node;  
             }
             index++;
         } else if (token.type == TOKEN_COMMENT) {
-            ASTNode *comment_node = new_ast_node(NODE_COMMENT, token.value);
+            ASTNode *comment_node = new_ast_node(NODE_COMMENT, token.value, index);
             if (head == NULL) {  
                 head = comment_node;  
                 tail = comment_node;  
             } else {
-                tail->next = comment_node;  
+                tail->next = NULL;  
                 tail = comment_node;  
             }
             index++;
         } else if (token.type == TOKEN_PRINT_FUNCTION){ 
-            ASTNode *print_node = new_ast_node(NODE_PRINT_FUNCTION, token.value);
+            ASTNode *print_node = new_ast_node(NODE_PRINT_FUNCTION, token.value, index);
             if (++index < token_count && (tokens[index].type == TOKEN_TEXT)) {  
-                text_node = new_ast_node(NODE_TEXT, tokens[index].value);
+                text_node = new_ast_node(NODE_TEXT, tokens[index].value, index);
                 printf("%s\n", text_node->value + 1);
                 print_node->next = text_node;  
             } else {
@@ -196,17 +197,17 @@ ASTNode *parse(Token *tokens, int token_count) {
                 head = print_node;  
                 tail = text_node ? text_node : print_node;  
             } else {
-                tail->next = print_node;  
+                tail->next = NULL;  
                 tail = text_node ? text_node : print_node;  
             }
             index++;
         } else if (token.type == TOKEN_TERMINATE){ 
-            ASTNode *print_node = new_ast_node(NODE_TERMINATE, token.value);
+            ASTNode *print_node = new_ast_node(NODE_TERMINATE, token.value, index);
             if (head == NULL) {  
                 head = print_node;  
                 tail = text_node ? text_node : print_node;  
             } else {
-                tail->next = print_node;  
+                tail->next = NULL;  
                 tail = text_node ? text_node : print_node;  
             }
             printf("Terminated.");
