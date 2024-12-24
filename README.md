@@ -78,6 +78,12 @@ In Qode, qubits are prefixed with `q`, followed by the name of the qubit. *Qubit
         !Z q1
         ```
 
+    - **Phase-S Gate** (`!S`): Applies a phase shift of π/2 to the qubit state.
+    
+        ```
+        !S q1
+        ```
+
 2. Built-In Functions
 
     Built-in functions use the `#` prefix to perform operations, such as output.
@@ -147,6 +153,7 @@ Alternatively, the logic can be written on a single line as well for conciseness
 - Pauli-X Gate: `!X [qubit]`
 - Pauli-Y Gate: `!Y [qubit]`
 - Pauli-Z Gate: `!Z [qubit]`
+- Phase-S Gate: `!S [qubit]`
 
 **Built-In Functions**
 - Output Text: `#> [text]`

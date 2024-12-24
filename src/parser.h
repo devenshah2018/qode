@@ -12,6 +12,7 @@ typedef enum {
     NODE_I_GATE,
     NODE_Y_GATE,
     NODE_Z_GATE,
+    NODE_PHASE_S_GATE,
     NODE_COMMENT,
     NODE_TERMINATE
 } NodeType;

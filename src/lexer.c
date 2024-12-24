@@ -35,6 +35,8 @@ Token *lexer(const char *code, int *token_count) {
             tokens[*token_count].type = TOKEN_Y_GATE;
         } else if (token_str[0] == '!' && token_str[1] == 'Z') {
             tokens[*token_count].type = TOKEN_Z_GATE;
+        } else if (token_str[0] == '!' && token_str[1] == 'S') {
+            tokens[*token_count].type = TOKEN_PHASE_S_GATE;
         } else if (token_str[0] == 'q') {
             tokens[*token_count].type = TOKEN_QUBIT;
         } else if (token_str[0] == '#' && token_str[1] == '>') {

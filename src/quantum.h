@@ -12,4 +12,6 @@ void apply_y_gate(ASTNode *qubit_node);
 
 void apply_z_gate(ASTNode *qubit_node);
 
+void apply_phase_s_gate(ASTNode *qubit_node);
+
 #endif
