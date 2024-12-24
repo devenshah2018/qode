@@ -75,3 +75,13 @@ void apply_phase_s_gate(ASTNode *qubit_node) {
     create_qubit(qubit_node, creal(new_alpha), cimag(new_alpha), creal(new_beta), cimag(new_beta));
     printf("Phase S gate applied to %s.\n", qubit_node->value);
 }
+
+void apply_phase_t_gate(ASTNode *qubit_node) {
+    if (qubit_node == NULL) return;
+    double complex alpha = qubit_node->state[0] + qubit_node->state[1] * I;
+    double complex beta = qubit_node->state[2] + qubit_node->state[3] * I;
+    double complex new_alpha = alpha; 
+    double complex new_beta = beta * cexp(I * M_PI / 4);
+    create_qubit(qubit_node, creal(new_alpha), cimag(new_alpha), creal(new_beta), cimag(new_beta));
+    printf("Phase T gate applied to %s.\n", qubit_node->value);
+}

@@ -12,6 +12,7 @@ typedef enum {
     TOKEN_Y_GATE,
     TOKEN_Z_GATE,
     TOKEN_PHASE_S_GATE,
+    TOKEN_PHASE_T_GATE,
     TOKEN_COMMENT,
     TOKEN_TERMINATE
 } TokenType;

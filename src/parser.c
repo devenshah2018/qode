@@ -251,7 +251,7 @@ ASTNode *parse(Token *tokens, int token_count) {
             }
             index++;
         } else if (token.type == TOKEN_PHASE_S_GATE) {
-            ASTNode *z_node = new_ast_node(NODE_PHASE_S_GATE, token.value, index);
+            ASTNode *s_node = new_ast_node(NODE_PHASE_S_GATE, token.value, index);
             if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
                 qubit_node = NULL;
                 ASTNode *current = head;
@@ -266,18 +266,48 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_phase_s_gate(qubit_node);
-                z_node->next = qubit_node;  
+                s_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
-                free_ast(z_node);
+                free_ast(s_node);
                 return NULL;  
             }
             if (head == NULL) {  
-                head = z_node;  
-                tail = qubit_node ? qubit_node : z_node;  
+                head = s_node;  
+                tail = qubit_node ? qubit_node : s_node;  
             } else {
                 tail->next = NULL;  
-                tail = qubit_node ? qubit_node : z_node;  
+                tail = qubit_node ? qubit_node : s_node;  
+            }
+            index++;
+        } else if (token.type == TOKEN_PHASE_T_GATE) {
+            ASTNode *t_node = new_ast_node(NODE_PHASE_T_GATE, token.value, index);
+            if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
+                qubit_node = NULL;
+                ASTNode *current = head;
+                while (current != NULL) {
+                    if (current->type == NODE_QUBIT && strcmp(current->value, tokens[index].value) == 0) {
+                        qubit_node = current;
+                        break;
+                    }
+                    current = current->next;
+                }
+                if (qubit_node == NULL) {
+                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
+                }
+                apply_phase_t_gate(qubit_node);
+                t_node->next = qubit_node;  
+            } else {
+                fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
+                free_ast(t_node);
+                return NULL;  
+            }
+            if (head == NULL) {  
+                head = t_node;  
+                tail = qubit_node ? qubit_node : t_node;  
+            } else {
+                tail->next = NULL;  
+                tail = qubit_node ? qubit_node : t_node;  
             }
             index++;
         } else if (token.type == TOKEN_COMMENT) {
