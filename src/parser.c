@@ -6,6 +6,71 @@
 #include "lexer.h"
 #include "quantum.h"
 
+ActionHistory *action_head = NULL;
+
+void add_action(const char *action, const char *qubit) {
+    ActionHistory *new_action = (ActionHistory *)malloc(sizeof(ActionHistory));
+    if (new_action == NULL) {
+        fprintf(stderr, "Memory allocation failed for action history\n");
+        return;
+    }
+    new_action->action_description = strdup(action);
+    new_action->qubit_name = strdup(qubit ? qubit : "");
+    new_action->next = action_head;
+    action_head = new_action;
+}
+
+void print_action_summary(void) {
+    if (action_head == NULL) {
+        printf("Quantum circuit execution summary: No quantum operations performed.\n");
+        return;
+    }
+    
+    printf("Quantum circuit execution summary:\n");
+    
+    ActionHistory *current = action_head;
+    int action_count = 0;
+    
+    // Count actions and reverse order for chronological display
+    ActionHistory *prev = NULL;
+    ActionHistory *next = NULL;
+    while (current != NULL) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+        action_count++;
+    }
+    
+    printf("Total quantum operations: %d\n", action_count);
+    
+    current = prev;
+    int step = 1;
+    while (current != NULL) {
+        if (strlen(current->qubit_name) > 0) {
+            printf("Step %d: %s to qubit %s\n", step, current->action_description, current->qubit_name);
+        } else {
+            printf("Step %d: %s\n", step, current->action_description);
+        }
+        current = current->next;
+        step++;
+    }
+    
+    printf("Quantum circuit execution terminated.\n");
+}
+
+void free_action_history(void) {
+    ActionHistory *current = action_head;
+    while (current != NULL) {
+        ActionHistory *temp = current;
+        current = current->next;
+        free(temp->action_description);
+        free(temp->qubit_name);
+        free(temp);
+    }
+    action_head = NULL;
+}
+
 ASTNode *new_ast_node(NodeType type, const char *value, double id) {
     ASTNode *node = (ASTNode *)malloc(sizeof(ASTNode));
     if (node == NULL) {
@@ -56,6 +121,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_h_gate(qubit_node);
+                add_action("Hadamard gate operation", tokens[index].value);
                 hadamard_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
@@ -86,6 +152,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_x_gate(qubit_node);
+                add_action("Pauli-X gate operation", tokens[index].value);
                 x_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
@@ -116,6 +183,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_i_gate(qubit_node);
+                add_action("Identity gate operation", tokens[index].value);
                 identity_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
@@ -146,6 +214,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_y_gate(qubit_node);
+                add_action("Pauli-Y gate operation", tokens[index].value);
                 y_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
@@ -176,66 +245,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_z_gate(qubit_node);
-                z_node->next = qubit_node;  
-            } else {
-                fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
-                free_ast(z_node);
-                return NULL;  
-            }
-            if (head == NULL) {  
-                head = z_node;  
-                tail = qubit_node ? qubit_node : z_node;  
-            } else {
-                tail->next = NULL;  
-                tail = qubit_node ? qubit_node : z_node;  
-            }
-            index++;
-        } else if (token.type == TOKEN_Z_GATE) {
-            ASTNode *z_node = new_ast_node(NODE_Z_GATE, token.value, index);
-            if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
-                qubit_node = NULL;
-                ASTNode *current = head;
-                while (current != NULL) {
-                    if (current->type == NODE_QUBIT && strcmp(current->value, tokens[index].value) == 0) {
-                        qubit_node = current;
-                        break;
-                    }
-                    current = current->next;
-                }
-                if (qubit_node == NULL) {
-                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
-                }
-                apply_z_gate(qubit_node);
-                z_node->next = qubit_node;  
-            } else {
-                fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
-                free_ast(z_node);
-                return NULL;  
-            }
-            if (head == NULL) {  
-                head = z_node;  
-                tail = qubit_node ? qubit_node : z_node;  
-            } else {
-                tail->next = NULL;  
-                tail = qubit_node ? qubit_node : z_node;  
-            }
-            index++;
-        } else if (token.type == TOKEN_Z_GATE) {
-            ASTNode *z_node = new_ast_node(NODE_Z_GATE, token.value, index);
-            if (++index < token_count && (tokens[index].type == TOKEN_QUBIT)) {  
-                qubit_node = NULL;
-                ASTNode *current = head;
-                while (current != NULL) {
-                    if (current->type == NODE_QUBIT && strcmp(current->value, tokens[index].value) == 0) {
-                        qubit_node = current;
-                        break;
-                    }
-                    current = current->next;
-                }
-                if (qubit_node == NULL) {
-                    qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
-                }
-                apply_z_gate(qubit_node);
+                add_action("Pauli-Z gate operation", tokens[index].value);
                 z_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
@@ -266,6 +276,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_phase_s_gate(qubit_node);
+                add_action("S gate operation", tokens[index].value);
                 s_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
@@ -296,6 +307,7 @@ ASTNode *parse(Token *tokens, int token_count) {
                     qubit_node = new_ast_node(NODE_QUBIT, tokens[index].value, index);
                 }
                 apply_phase_t_gate(qubit_node);
+                add_action("T gate operation", tokens[index].value);
                 t_node->next = qubit_node;  
             } else {
                 fprintf(stderr, "Error: Gate without qubit %s\n", token.value);
@@ -325,6 +337,7 @@ ASTNode *parse(Token *tokens, int token_count) {
             if (++index < token_count && (tokens[index].type == TOKEN_TEXT)) {  
                 text_node = new_ast_node(NODE_TEXT, tokens[index].value, index);
                 printf("%s\n", text_node->value + 1);
+                add_action("Console output", text_node->value + 1);
                 print_node->next = text_node;  
             } else {
                 fprintf(stderr, "Error: Built-in function without argument %s\n", token.value);
@@ -348,7 +361,8 @@ ASTNode *parse(Token *tokens, int token_count) {
                 tail->next = NULL;  
                 tail = text_node ? text_node : print_node;  
             }
-            printf("Terminated.");
+            print_action_summary();
+            free_action_history();
             free_ast(head);
             exit(0);
         } else {

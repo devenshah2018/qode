@@ -31,7 +31,7 @@ void apply_h_gate(ASTNode *qubit_node) {
     qubit_node->state[0] = alpha_prob;
     qubit_node->state[2] = beta_prob;
     normalize_state(qubit_node->state);
-    printf("Hadamard gate applied to %s.\n", qubit_node->value);
+    printf("Hadamard gate applied to qubit %s: superposition state created\n", qubit_node->value);
 }
 
 void apply_x_gate(ASTNode *qubit_node) {
@@ -39,11 +39,14 @@ void apply_x_gate(ASTNode *qubit_node) {
     double temp_real = qubit_node->state[0];  
     double temp_imag = qubit_node->state[1];  
     create_qubit(qubit_node, qubit_node->state[2], qubit_node->state[3], temp_real, temp_imag);
-    printf("Pauli-X gate applied to %s.\n", qubit_node->value);
+    printf("Pauli-X gate applied to qubit %s: computational basis state flipped\n", qubit_node->value);
 }
 
 void apply_i_gate(ASTNode *qubit_node) {
-    printf("Identity gate applied to %s. Alpha Probability (Real): %f. Alpha Probability (Complex): %f. Beta Probability (Real): %f. Beta Probability (Complex): %f\n", qubit_node->value, qubit_node->state[0], qubit_node->state[1], qubit_node->state[2], qubit_node->state[3]);
+    printf("Qubit %s state: |0⟩ probability: %.3f, |1⟩ probability: %.3f\n", 
+           qubit_node->value, 
+           qubit_node->state[0] * qubit_node->state[0] + qubit_node->state[1] * qubit_node->state[1],
+           qubit_node->state[2] * qubit_node->state[2] + qubit_node->state[3] * qubit_node->state[3]);
 }
 
 void apply_y_gate(ASTNode *qubit_node) {
@@ -53,7 +56,7 @@ void apply_y_gate(ASTNode *qubit_node) {
     double complex new_alpha = -I * beta;
     double complex new_beta = I * alpha;
     create_qubit(qubit_node, creal(new_alpha), cimag(new_alpha), creal(new_beta), cimag(new_beta));
-    printf("Pauli-Y gate applied to %s.\n", qubit_node->value);
+    printf("Pauli-Y gate applied to qubit %s: rotation about Y-axis with phase\n", qubit_node->value);
 }
 
 void apply_z_gate(ASTNode *qubit_node) {
@@ -63,7 +66,7 @@ void apply_z_gate(ASTNode *qubit_node) {
     double complex new_alpha = alpha; 
     double complex new_beta = -beta;  
     create_qubit(qubit_node, creal(new_alpha), cimag(new_alpha), creal(new_beta), cimag(new_beta));
-    printf("Pauli-Z gate applied to %s.\n", qubit_node->value);
+    printf("Pauli-Z gate applied to qubit %s: phase flip operation\n", qubit_node->value);
 }
 
 void apply_phase_s_gate(ASTNode *qubit_node) {
@@ -73,7 +76,7 @@ void apply_phase_s_gate(ASTNode *qubit_node) {
     double complex new_alpha = alpha; 
     double complex new_beta = beta * cexp(I * M_PI / 2);
     create_qubit(qubit_node, creal(new_alpha), cimag(new_alpha), creal(new_beta), cimag(new_beta));
-    printf("Phase S gate applied to %s.\n", qubit_node->value);
+    printf("S gate applied to qubit %s: pi/2 phase rotation\n", qubit_node->value);
 }
 
 void apply_phase_t_gate(ASTNode *qubit_node) {
@@ -83,5 +86,5 @@ void apply_phase_t_gate(ASTNode *qubit_node) {
     double complex new_alpha = alpha; 
     double complex new_beta = beta * cexp(I * M_PI / 4);
     create_qubit(qubit_node, creal(new_alpha), cimag(new_alpha), creal(new_beta), cimag(new_beta));
-    printf("Phase T gate applied to %s.\n", qubit_node->value);
+    printf("T gate applied to qubit %s: pi/4 phase rotation\n", qubit_node->value);
 }

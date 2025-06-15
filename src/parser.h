@@ -18,6 +18,14 @@ typedef enum {
     NODE_TERMINATE
 } NodeType;
 
+typedef struct ActionHistory {
+    char *action_description;
+    char *qubit_name;
+    struct ActionHistory *next;
+} ActionHistory;
+
+extern ActionHistory *action_head;
+
 typedef struct ASTNode {
     double id;
     NodeType type;
@@ -29,5 +37,8 @@ typedef struct ASTNode {
 ASTNode *parse(Token *tokens, int token_count);
 ASTNode *new_ast_node(NodeType type, const char *value, double id);
 void free_ast(ASTNode *root);
+void add_action(const char *action, const char *qubit);
+void print_action_summary(void);
+void free_action_history(void);
 
 #endif
