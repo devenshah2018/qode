@@ -143,6 +143,13 @@ Alternatively, the logic can be written on a single line as well for conciseness
 
     This will execute the `test.qc` script located in the `examples` directory using the compiled interpreter.
 
+3. Optional: Export Compiler
+
+    ```
+    emcc ./src/lexer.c ./src/parser.c ./src/main.c ./src/quantum.c -o ./quantum_interpreter.js -s EXPORTED_FUNCTIONS='["_main"]' -s MODULARIZE=1 -s EXPORT_NAME="QuantumInterpreter" -s 'EXPORTED_RUNTIME_METHODS=["FS","print","printErr","callMain"]' -s IMPORTED_MEMORY=1 -s INITIAL_MEMORY=16MB -s MAXIMUM_MEMORY=32MB -s ALLOW_MEMORY_GROWTH=1
+    ```
+
+    This will compile the source code into a JavaScript file `quantum_interpreter.js`, which can be used in web applications or other JavaScript environments. The `EXPORTED_FUNCTIONS` and `IMPORTED_MEMORY` options ensure that the necessary functions and memory management are available for use.
 ---
 
 ### Reference
