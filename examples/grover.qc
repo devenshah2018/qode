@@ -1,0 +1,20 @@
+// A two-qubit search. One Grover iteration selects marked state |11>.
+qubit a;
+qubit b;
+bit x;
+bit y;
+h a;
+h b;
+cz a, b;
+h a;
+h b;
+x a;
+x b;
+cz a, b;
+x a;
+x b;
+h a;
+h b;
+inspect probabilities;
+measure a -> x;
+measure b -> y;

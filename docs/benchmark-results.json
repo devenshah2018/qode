@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-13T19:43:32.631704+00:00",
+  "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "processor": "Apple M4",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.3)",
+  "build": "CMake Release, -O3 -DNDEBUG; no fast-math; five fresh-process trials per case",
+  "results": [
+    {
+      "qubits": 8,
+      "gates": 1000,
+      "trace": false,
+      "compileMs": 0.182152,
+      "executeMs": 0.504971,
+      "sample10000Ms": 0.656843,
+      "peakRssBytes": 2146304
+    },
+    {
+      "qubits": 12,
+      "gates": 1000,
+      "trace": false,
+      "compileMs": 0.102043,
+      "executeMs": 2.713919,
+      "sample10000Ms": 2.990007,
+      "peakRssBytes": 2310144
+    },
+    {
+      "qubits": 16,
+      "gates": 200,
+      "trace": false,
+      "compileMs": 0.025988,
+      "executeMs": 8.559942,
+      "sample10000Ms": 9.033918,
+      "peakRssBytes": 4653056
+    },
+    {
+      "qubits": 20,
+      "gates": 100,
+      "trace": false,
+      "compileMs": 0.017166,
+      "executeMs": 70.204973,
+      "sample10000Ms": 72.197914,
+      "peakRssBytes": 44007424
+    },
+    {
+      "qubits": 12,
+      "gates": 1000,
+      "trace": true,
+      "compileMs": 0.09203,
+      "executeMs": 10.824919,
+      "sample10000Ms": 2.901077,
+      "peakRssBytes": 2441216
+    }
+  ]
+}

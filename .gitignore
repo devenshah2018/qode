@@ -1,0 +1,11 @@
+.DS_Store
+/build/
+/work/
+/web/node_modules/
+/web/dist/
+/web/public/wasm/
+/web/playwright-report/
+/web/test-results/
+.venv/
+__pycache__/
+*.pyc
