@@ -12,3 +12,5 @@ __pycache__/
 /.vercel/
 /tools/deploy/node_modules/
 /web/public/LICENSE.txt
+.vercel
+.env*
