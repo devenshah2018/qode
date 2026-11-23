@@ -19,18 +19,18 @@ test('steps, reverses measurement, and replays the identical state', async ({ pa
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await ready(page);
-  await page.getByRole('button', { name: 'Step →', exact: true }).click();
+  await page.getByRole('button', { name: 'Step', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('step 1');
   await expect(page.locator('.amplitude').first()).toContainText('50.00');
-  await page.getByRole('button', { name: 'Step →', exact: true }).click();
+  await page.getByRole('button', { name: 'Step', exact: true }).click();
   await page.getByRole('tab', { name: 'Qubits', exact: true }).click();
   await expect(page.locator('.badge.mixed')).toHaveCount(2);
   await page.getByRole('button', { name: 'Run', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('Execution complete');
   const before = await page.locator('.bit-values').textContent();
-  await page.getByRole('button', { name: '← Back', exact: true }).click();
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('step 4');
-  await page.getByRole('button', { name: 'Step →', exact: true }).click();
+  await page.getByRole('button', { name: 'Step', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('Execution complete');
   await expect(page.locator('.bit-values')).toHaveText(before!);
   await page.getByRole('button', { name: 'Reset', exact: true }).click();
@@ -39,13 +39,13 @@ test('steps, reverses measurement, and replays the identical state', async ({ pa
 });
 test('samples Bell correlations and exports all counts', async ({ page }) => {
   await ready(page);
-  await page.getByRole('button', { name: 'Sample ↗' }).click();
+  await page.getByRole('button', { name: 'Sample' }).click();
   await expect(page.getByTestId('histogram')).toBeVisible();
   const outcomes = await page.locator('.histogram-row code').allTextContents();
   expect(outcomes.sort()).toEqual(['00', '11']);
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    page.getByRole('button', { name: 'Export results ↓' }).click(),
+    page.getByRole('button', { name: 'Export results' }).click(),
   ]);
   expect(download.suggestedFilename()).toBe('qode-results.json');
 });
@@ -66,11 +66,11 @@ test('checkpoint replay crosses branches and retains observation history', async
   await edit(page, source);
   await page.getByRole('button', { name: 'Run', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('Execution complete');
-  await page.getByRole('button', { name: '← Back', exact: true }).click();
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('Ready');
   await page.getByRole('tab', { name: 'Output', exact: true }).click();
   await expect(page.locator('.observation')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Step →', exact: true }).click();
+  await page.getByRole('button', { name: 'Step', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('Execution complete');
   await expect(page.locator('.observation')).toHaveCount(1);
 });
@@ -142,7 +142,7 @@ test('stops a worker during an expensive circuit and recreates it safely', async
   await expect(page.getByRole('status').first()).toContainText('Stopped');
   await page.getByRole('button', { name: 'Reset', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('step 0');
-  await expect(page.getByRole('button', { name: 'Step →', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Step', exact: true })).toBeDisabled();
 });
 
 test('persists edits and safely compiles source larger than the Wasm stack margin', async ({

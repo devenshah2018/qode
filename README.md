@@ -53,16 +53,20 @@ Install Node **22.15.0** and Emscripten **4.0.10** for the pinned development se
 
 The launcher installs frontend dependencies when needed, builds WebAssembly, and starts the development server. It works from any working directory and uses the active Node installation for Emscripten. Pass Vite options directly, for example `./start.sh --port 5180` or `./start.sh --open`. Press Ctrl+C to stop.
 
-Open the printed Local URL. For a production build, run `npm --prefix web run build`; `web/dist` is a static site. If an existing Emscripten configuration points at a broken Node, set `EM_NODE_JS` to your working Node executable for the build.
+Open the printed Local URL. The workbench lives at `/` and its searchable documentation at `/docs/`. For a production build, run `npm --prefix web run build`; `web/dist` is a static site. If an existing Emscripten configuration points at a broken Node, set `EM_NODE_JS` to your working Node executable for the build.
 
 The playground includes:
 
 - A CodeMirror editor with source-line highlighting, circuit diagram, Run, Step, Back, Reset, and Stop.
-- Complex amplitudes, phase colors, probabilities, classical bits, and reduced-state Bloch vectors that correctly label mixed qubits.
+- Complex amplitudes, numerical phases, probabilities, classical bits, and reduced-state Bloch vectors that correctly label mixed qubits.
 - Seeded sampling, local autosave, `.qc` import/export, JSON export, and share links containing code and settings.
 - Guided superposition, interference, Bell, GHZ, Grover, and teleportation examples.
 
 Simulation runs in a worker; Stop terminates it immediately. Code and results stay in your browser. Share links contain the program in their URL fragment. There is no account system, backend, analytics, or external font service.
+
+## Deploy to Vercel
+
+GitHub Actions builds WebAssembly, verifies the native engine and browser, then deploys the tested static artifact to Vercel. Complete the [one-time project and GitHub secrets setup](docs/DEPLOYMENT.md). Subsequent successful pushes to `main` deploy automatically; Vercel needs no compiler or backend.
 
 ## A deliberately small language
 

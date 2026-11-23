@@ -11,7 +11,8 @@ The local environment is macOS 26.5.1, arm64 Apple M4, Apple Clang 17, Node 22.1
 | Numerical oracle | 78 dense-matrix gate/order cases; 80 seeded Qiskit circuits of 60 gates; 10,000-gate norm; all four teleportation branches; GHZ/Grover and reset/dynamic sampling |
 | Tolerances | State/probability error <1e-10; 10,000-gate normalization drift <1e-9 |
 | Native/Wasm parity | 24 seeded circuit cases, plus matching terminal and dynamic sample counts |
-| Browser | 30 checks across Chromium, Firefox, and WebKit, including mobile and worker cancellation |
+| Deployment | Five packaging checks: required pages/engine/licenses, root paths, artifact tampering, routing, and cache/MIME policy |
+| Browser | 72 checks across Chromium, Firefox, and WebKit, including documentation, mobile layouts, keyboard access, automated WCAG 2.1 AA checks, and worker cancellation |
 | Native UBSan | All CTest suites |
 | Wasm ASan/UBSan/LSan | Core regressions, 40,000 deterministic parser mutations, 400 allocation-failure schedules |
 | Static analysis | No diagnostics in seven implementation translation units |
@@ -38,6 +39,9 @@ npm --prefix web run format:check
 npm --prefix web run build
 npm --prefix web exec -- playwright install chromium firefox webkit
 npm --prefix web test
+node --test tests/test_deployment.mjs
+node tools/package-vercel.mjs
+node tools/package-vercel.mjs --verify
 ```
 
 Native sanitizer verification on supported hosts:
@@ -64,6 +68,6 @@ The local Apple toolchain lacks its libFuzzer archive, so coverage-guided fuzzin
 
 ## Platform and release status
 
-CI declares GCC 13 and Clang 18 on Ubuntu 24.04, the runner's Clang on macOS 15, and Visual Studio C11 on Windows 2022. Linux/Windows builds and hosted workflows require an actual GitHub run after review. Browser and native/Wasm parity tests run on built production assets under `/qode/`.
+CI declares GCC 13 and Clang 18 on Ubuntu 24.04, the runner's Clang on macOS 15, and Visual Studio C11 on Windows 2022. Linux/Windows builds and hosted workflows require an actual GitHub run after review. Browser and native/Wasm parity tests run on built production assets under `/`.
 
 The Pages workflow and release-artifact workflow are manual. Publishing and Pages configuration are separate from local validation; see `RELEASING.md`.

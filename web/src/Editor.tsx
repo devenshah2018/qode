@@ -65,44 +65,46 @@ const theme = EditorView.theme(
   {
     '&': {
       height: '100%',
-      backgroundColor: '#152925',
-      color: '#e7efe8',
+      backgroundColor: '#ffffff',
+      color: '#242424',
       fontSize: '14px',
     },
     '.cm-scroller': {
-      fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", monospace',
+      fontFamily: '"JetBrains Mono Variable", "SFMono-Regular", Consolas, monospace',
       lineHeight: '1.8',
     },
-    '.cm-content': { padding: '18px 0', caretColor: '#b9e4ce' },
-    '.cm-gutters': { background: '#152925', color: '#8aaba0', border: 'none' },
+    '.cm-content': { padding: '18px 0', caretColor: '#a92f20' },
+    '.cm-gutters': { background: '#ffffff', color: '#727272', border: 'none' },
     '.cm-lineNumbers .cm-gutterElement': { padding: '0 18px 0 12px' },
-    '.cm-activeLine': { background: '#ffffff05' },
+    '.cm-activeLine': { background: '#00000003' },
     '.executing-line': {
-      background: '#b6df7a24',
-      boxShadow: 'inset 3px 0 #bfdf8e',
+      background: '#fff0bc',
+      boxShadow: 'inset 3px 0 #be3524',
     },
     '&.cm-focused': { outline: 'none' },
     '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
-      background: '#577f6e66',
+      background: '#dedede',
     },
   },
-  { dark: true },
+  { dark: false },
 );
 const colors = HighlightStyle.define([
-  { tag: tags.keyword, color: '#bedea0' },
-  { tag: tags.function(tags.variableName), color: '#f7c27e' },
-  { tag: tags.string, color: '#ead3ad' },
-  { tag: tags.comment, color: '#96aca1', fontStyle: 'italic' },
-  { tag: tags.number, color: '#b9c1f3' },
+  { tag: tags.keyword, color: '#a92f20' },
+  { tag: tags.function(tags.variableName), color: '#242424' },
+  { tag: tags.string, color: '#3c614b' },
+  { tag: tags.comment, color: '#707070', fontStyle: 'italic' },
+  { tag: tags.number, color: '#855229' },
 ]);
 export function Editor({
   source,
+  revision,
   line,
   onChange,
   onRun,
   disabled,
 }: {
   source: string;
+  revision: number;
   line: number;
   onChange: (source: string) => void;
   onRun: () => void;
@@ -110,7 +112,7 @@ export function Editor({
 }) {
   const host = useRef<HTMLDivElement>(null),
     view = useRef<EditorView | null>(null);
-  const lastEmitted = useRef(source),
+  const appliedRevision = useRef(revision),
     editable = useRef(new Compartment());
   const change = useRef(onChange),
     run = useRef(onRun);
@@ -151,13 +153,16 @@ export function Editor({
           }),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              lastEmitted.current = update.state.doc.toString();
-              change.current(lastEmitted.current);
+              change.current(update.state.doc.toString());
             }
           }),
         ],
       }),
     });
+    editor.scrollDOM.tabIndex = 0;
+    editor.scrollDOM.setAttribute('role', 'region');
+    editor.scrollDOM.setAttribute('aria-label', 'Source code viewport');
+    editor.scrollDOM.style.outlineOffset = '-3px';
     view.current = editor;
     return () => {
       editor.destroy();
@@ -168,13 +173,18 @@ export function Editor({
   }, []);
   useEffect(() => {
     const v = view.current;
-    if (v && source !== lastEmitted.current && source !== v.state.doc.toString())
-      v.dispatch({
-        changes: { from: 0, to: v.state.doc.length, insert: source },
-      });
-  }, [source]);
+    if (!v || appliedRevision.current === revision) return;
+    appliedRevision.current = revision;
+    if (source !== v.state.doc.toString())
+      v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: source } });
+  }, [source, revision]);
   useEffect(() => {
-    view.current?.dispatch({ effects: activeLine.of(line) });
+    const editor = view.current;
+    if (!editor) return;
+    const effects: StateEffect<unknown>[] = [activeLine.of(line)];
+    if (line > 0 && line <= editor.state.doc.lines)
+      effects.push(EditorView.scrollIntoView(editor.state.doc.line(line).from, { y: 'nearest' }));
+    editor.dispatch({ effects });
   }, [line]);
   useEffect(() => {
     view.current?.dispatch({

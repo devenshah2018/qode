@@ -14,10 +14,11 @@ for (const [location, metadata] of Object.entries(lock.packages)) {
   const pkg = JSON.parse(fs.readFileSync(path.join(directory, 'package.json'), 'utf8'));
   const files = fs
     .readdirSync(directory)
-    .filter((name) => /^(licen[sc]e|copying)(\.|$)/i.test(name));
+    .filter((name) => /^(licen[sc]e|copying|ofl)(\.|$)/i.test(name));
   if (!files.length) throw new Error(`Missing runtime license: ${pkg.name}`);
   notices.push(`=== ${pkg.name} ${pkg.version} (${pkg.license ?? 'see license'}) ===`);
   for (const file of files) notices.push(fs.readFileSync(path.join(directory, file), 'utf8'));
 }
 fs.mkdirSync(path.join(root, 'public'), { recursive: true });
 fs.writeFileSync(path.join(root, 'public/THIRD_PARTY_NOTICES.txt'), notices.join('\n\n') + '\n');
+fs.copyFileSync(path.join(root, '../LICENSE'), path.join(root, 'public/LICENSE.txt'));

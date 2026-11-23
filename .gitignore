@@ -9,3 +9,6 @@
 .venv/
 __pycache__/
 *.pyc
+/.vercel/
+/tools/deploy/node_modules/
+/web/public/LICENSE.txt

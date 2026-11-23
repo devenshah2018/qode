@@ -21,7 +21,7 @@ jobs:
           version: '4.0.10'
       - run: make wasm
       - run: npm --prefix web ci
-      - run: npm --prefix web run build
+      - run: npm --prefix web run build -- --base=/qode/
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: web/dist

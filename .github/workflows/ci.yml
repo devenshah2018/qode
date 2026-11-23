@@ -3,6 +3,9 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+concurrency:
+  group: verify-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 permissions:
   contents: read
 jobs:
@@ -78,6 +81,9 @@ jobs:
       - run: npm --prefix web ci
       - run: npm --prefix web run format:check
       - run: npm --prefix web run build
+      - run: web/node_modules/.bin/prettier --check tools/package-vercel.mjs tests/test_deployment.mjs tools/deploy/*.json vercel.json
+      - run: node --test tests/test_deployment.mjs
+      - run: node tools/package-vercel.mjs
       - run: npm --prefix web exec -- playwright install --with-deps chromium firefox webkit
       - run: npm --prefix web test
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -85,3 +91,95 @@ jobs:
         with:
           name: browser-failure-traces
           path: web/test-results
+      - name: Upload tested Vercel artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qode-vercel-${{ github.sha }}
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            .vercel/output/
+            work/vercel-manifest.json
+  deploy-vercel:
+    name: Deploy production to Vercel
+    needs: [native, sanitizers, browser]
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: vercel-production
+      cancel-in-progress: false
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check deployment setup
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        id: setup
+        shell: bash
+        run: |
+          if [[ -n "$VERCEL_TOKEN" && -n "$VERCEL_ORG_ID" && -n "$VERCEL_PROJECT_ID" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo '::notice::Vercel deployment is not configured. Add VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID; see docs/DEPLOYMENT.md.'
+            echo 'Vercel setup pending: see docs/DEPLOYMENT.md.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Skip superseded revisions
+        if: steps.setup.outputs.ready == 'true'
+        id: revision
+        shell: bash
+        run: |
+          latest=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [[ -z "$latest" ]]; then
+            echo '::error::Could not determine the current main revision.'
+            exit 1
+          fi
+          if [[ "$latest" == "$GITHUB_SHA" ]]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo 'A newer main revision exists; this run will not replace production.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.revision.outputs.current == 'true'
+        with:
+          node-version: '22.15.0'
+          cache: npm
+          cache-dependency-path: tools/deploy/package-lock.json
+      - name: Download this run's tested artifact
+        if: steps.revision.outputs.current == 'true'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: qode-vercel-${{ github.sha }}
+          path: .
+      - name: Verify artifact checksums
+        if: steps.revision.outputs.current == 'true'
+        run: node tools/package-vercel.mjs --verify
+      - name: Install pinned deployment CLI
+        if: steps.revision.outputs.current == 'true'
+        run: npm --prefix tools/deploy ci
+      - name: Deploy the prebuilt site
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        if: steps.revision.outputs.current == 'true'
+        id: deploy
+        shell: bash
+        run: |
+          url=$(tools/deploy/node_modules/.bin/vercel deploy --prebuilt --prod --yes --token="$VERCEL_TOKEN")
+          if [[ "$url" != https://* ]]; then
+            echo '::error::Vercel did not return a deployment URL.'
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Qode production deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "$url" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source revision: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"

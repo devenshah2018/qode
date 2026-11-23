@@ -6,10 +6,10 @@ export default defineConfig({
   fullyParallel: true,
   workers: 3,
   reporter: [['list']],
-  use: { baseURL: 'http://127.0.0.1:4173/qode/', trace: 'retain-on-failure' },
+  use: { baseURL: 'http://127.0.0.1:4173/', trace: 'retain-on-failure' },
   webServer: {
     command: 'npm run preview -- --port 4173',
-    url: 'http://127.0.0.1:4173/qode/',
+    url: 'http://127.0.0.1:4173/',
     reuseExistingServer: false,
   },
   projects: [

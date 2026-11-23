@@ -24,7 +24,7 @@ React and CodeMirror present source and results. A module worker loads the same 
 
 Stepping uses the engine instruction pointer. Every 32 executed instructions, the worker can clone the complete runtime: amplitudes, classical bits, PRNG, observations, instruction pointer, and executed-step counter. Back restores the nearest preceding checkpoint and deterministically replays to the requested execution step. Checkpoints have a 64 MiB total budget; the initial checkpoint is retained and older noninitial checkpoints are evicted before allocating replacements. Full state copies are restricted to at most 12 qubits.
 
-The circuit displays a bounded window, amplitudes are capped at 64 entries, and histograms display the 64 most frequent outcomes while exporting all counts. Reduced Bloch vectors derive from the full joint state and use purity to distinguish mixed states. The site contains no backend or network API calls; runtime assets are served statically under `/qode/`.
+The circuit displays a bounded window, amplitudes are capped at 64 entries, and histograms display the 64 most frequent outcomes while exporting all counts. Reduced Bloch vectors derive from the full joint state and use purity to distinguish mixed states. The site contains no backend or network API calls; runtime assets are served statically under `/`.
 
 ## Build boundaries
 

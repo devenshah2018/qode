@@ -86,7 +86,10 @@ async function handle(request: Request) {
       error: 'seed',
       message: 'Seed must be an unsigned 64-bit integer.',
     };
-  if (!Number.isInteger(request.shots) || request.shots < 1 || request.shots > 100000)
+  if (
+    request.action === 'sample' &&
+    (!Number.isInteger(request.shots) || request.shots < 1 || request.shots > 100000)
+  )
     throw { error: 'shots', message: 'Shots must be between 1 and 100,000.' };
   if (!module) {
     const factory = (await import(/* @vite-ignore */ request.wasmUrl)).default;
@@ -153,6 +156,10 @@ async function handle(request: Request) {
       read();
     }
   } else if (request.action === 'run') {
+    if (snapshot.done) {
+      send();
+      return;
+    }
     let executed = snapshot.steps;
     while (!snapshot.done) {
       for (let i = 0; i < 128; i++) {
@@ -168,6 +175,7 @@ async function handle(request: Request) {
       send(!snapshot.done);
       if (!snapshot.done) await new Promise((resolve) => setTimeout(resolve, 0));
     }
+    return;
   } else if (request.action === 'sample') {
     const result = json<Samples | EngineError>(
       'sample',
