@@ -75,6 +75,8 @@ jobs:
           actions-cache-folder: emsdk-cache
       - run: cmake -S . -B build/native -DCMAKE_BUILD_TYPE=Release
       - run: cmake --build build/native --parallel
+      - name: Check Make recipes with an Emscripten-style PATH
+        run: python tests/test_make.py
       - run: make wasm
       - run: node tests/test_wasm.mjs
       - run: python tools/check-wasm-sanitizers.py
