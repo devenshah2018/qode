@@ -2,6 +2,10 @@
 
 **A small quantum language that makes every step visible.**
 
+**[Try it](https://qode-olive.vercel.app/)** · **[Run locally](#browser-playground)** · **[Read the architecture](docs/ARCHITECTURE.md)**
+
+[Handbook](https://qode-olive.vercel.app/docs/) · [Verification runs](https://github.com/devenshah2018/qode/actions/workflows/ci.yml)
+
 Write a readable circuit, step through its complex amplitudes, and see how interference and measurement produce an outcome. Qode pairs a dependency-free C11 engine with a native CLI and an account-free WebAssembly playground.
 
 ![Qode workbench showing a Bell circuit and its quantum state](docs/playground.png)
@@ -20,6 +24,18 @@ measure bob -> b;
 ```
 
 The joint state is `( |00⟩ + |11⟩ ) / √2`. Sampling produces only `00` and `11`: each qubit is individually random, but their measurements agree.
+
+## A circuit, one step at a time
+
+![Live Qode debugger: Hadamard creates superposition, CX entangles the pair, inspection records the state, and measurement collapses it](docs/playground-demo.gif)
+
+Choose **Entanglement** in the [playground](https://qode-olive.vercel.app/), then press **Step**:
+
+1. **H, then CX:** the joint state has equal probability on `00` and `11`.
+2. **Inspect:** record the complex amplitudes without changing the state.
+3. **Measure Alice, then Bob:** the joint state collapses and the two classical results agree. Use **Back** to revisit the measurement, or **Reset** to start again.
+
+The animation records the real browser application; the source and state displays provide the same walkthrough without animation.
 
 ## Quick start
 
@@ -103,7 +119,7 @@ flowchart LR
 
 The runtime stores complex amplitudes jointly, supports entanglement, applies gates directly through bit indexing, and keeps presentation outside the simulation loop. Terminal-only measurement circuits evolve once and sample the final distribution; reset and dynamic circuits use independent executions.
 
-Validation includes independent dense matrices for every gate and operand ordering, 80 seeded random circuits compared with Qiskit, 10,000-gate normalization checks, teleportation across all four measurement branches, allocation-failure injection, and native/WebAssembly parity. Browser tests run in Chromium, Firefox, and WebKit. See [verification](docs/VERIFICATION.md) for reproducible commands and the distinction between local results and configured CI.
+Validation includes independent dense matrices for every gate and operand ordering, 80 seeded random circuits compared with Qiskit, 10,000-gate normalization checks, teleportation across all four measurement branches, allocation-failure injection, and native/WebAssembly parity. Browser tests run in Chromium, Firefox, and WebKit. See [verification](docs/VERIFICATION.md) for reproducible commands and local commands and linked successful GitHub runs.
 
 On the recorded arm64 development machine, 1,000 gates at 12 qubits took about **2.7 ms**, and 10,000 terminal samples including evolution took about **3.0 ms**. These are measurements of bounded examples, not general performance guarantees. [Benchmark method and raw results](docs/BENCHMARKS.md).
 
@@ -119,4 +135,4 @@ On the recorded arm64 development machine, 1,000 gates at 12 qubits took about *
 
 [Language reference](docs/LANGUAGE.md) · [Debugger tutorial](docs/DEBUGGING.md) · [Embedding API](docs/EMBEDDING.md) · [Architecture](docs/ARCHITECTURE.md) · [Feature evidence](docs/FEATURES.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
-Qode is a **1.0 release candidate**, prepared locally. Publishing releases and enabling GitHub Pages are separate steps. The existing [GNU GPL version 2 license](LICENSE) is preserved.
+Qode is a **1.0 release candidate** with a [live playground](https://qode-olive.vercel.app/) and [successful cross-platform verification](https://github.com/devenshah2018/qode/actions/runs/45204290587). Publishing a versioned release remains a separate step. The existing [GNU GPL version 2 license](LICENSE) is preserved.
