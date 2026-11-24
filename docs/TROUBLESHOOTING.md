@@ -43,26 +43,26 @@ Counts use classical-bit declaration order, not source measurement order. The hi
 
 The Reset button resets the entire runtime with the selected seed. The `reset q;` language statement measures one qubit internally and returns it to zero, potentially changing entangled partners.
 
-Back restores PRNG state and therefore repeats the same measurement when replayed. Change the seed or reset the program when you want a different trajectory. A stopped or failed worker has no valid checkpoints; the UI clears its runtime state and starts fresh on the next execution.
+Back restores PRNG state and therefore repeats the same measurement when replayed. Change the seed for a different reproducible sequence; resetting with the same seed repeats the sequence. A stopped or failed execution has no valid checkpoints; the next execution starts a fresh session.
 
 ## A share link fails
 
-Share URLs contain source and settings in a fragment, not a server-side project identifier. A truncated or edited fragment may not decode. The app reports an invalid share and keeps the saved experiment. Large programs should be shared as `.qc` files.
+Share URLs contain source and settings in a fragment, not a server-side project identifier. A truncated or edited fragment may not decode. The app reports an invalid share and keeps the saved source. Large programs should be shared as `.qc` files.
 
 Clipboard access may be unavailable in an insecure context or because of browser permissions. Export code still works. Local storage may be unavailable or full; editing and running remain available, but use Export code for a durable copy.
 
 ## File import fails
 
-Import requires a readable UTF-8 text file of at most 1 MiB. Invalid UTF-8 is rejected instead of silently replacing bytes. The existing experiment is retained. Source containing NUL bytes fails compilation even if the rest of the file is valid text.
+Import requires a readable UTF-8 text file of at most 1 MiB. Invalid UTF-8 is rejected instead of silently replacing bytes. The existing source is retained. Source containing NUL bytes fails compilation even if the rest of the file is valid text.
 
 ## The engine does not load
 
-Check that JavaScript and `.wasm` assets were deployed together. Run `make wasm` before building the web app. The runtime module is loaded asynchronously; serve the site over HTTP rather than opening an HTML file directly from disk.
+Reload the page, then use **Reset** to retry. Export code before clearing browser storage. If the problem continues, report the page URL, browser version, and message shown under Problems.
 
-For local development, use `./start.sh`. It chooses the working Node installation unless `EM_NODE_JS` is explicitly set. If a previously configured Emscripten installation references a removed Node binary, unset or correct that environment override. A missing SDK is a setup problem rather than a quantum program error.
+For a local copy, start the app with `./start.sh` and open its printed HTTP URL. See the repository README for installation requirements.
 
 ## The browser is slow or hits a limit
 
 Quantum state storage doubles for each extra qubit. Use fewer qubits and instructions, remove repeated inspections, or lower the shot count. The browser supports 16 simulation qubits, but Step and Back are limited to 12. The native engine supports up to 24.
 
-Stop terminates the worker immediately. Qode also caps source, instructions, observations, and checkpoint storage. Norm and reduced states always use the full vector, even when the UI truncates amplitude rows. A display limit is not a simulation approximation.
+Use **Stop** to cancel the active execution. Qode also caps source, instructions, observations, and checkpoint storage. Norm and reduced states always use the full vector, even when the UI truncates amplitude rows. A display limit is not a simulation approximation.

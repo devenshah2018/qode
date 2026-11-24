@@ -1,8 +1,8 @@
-# Circuit patterns
+# Code examples
 
-These complete programs are small enough to inspect gate by gate. Load them into the workbench, make a prediction, and then compare amplitudes, classical bits, and sampling results. The examples use ideal operations; no hardware noise is modeled.
+These complete programs can be opened directly in the workbench. Each example states its expected result. All operations are ideal and noiseless.
 
-## Prepare a biased quantum coin
+## Biased measurement
 
 RY sets a controlled mixture of zero and one. Starting at zero, the probability of one after `ry(theta)` is `sin²(theta/2)`.
 
@@ -16,7 +16,7 @@ measure coin -> result;
 
 Before measurement, one has probability 0.25. A large sample should approach 25% ones, but a single run yields a definite zero or one. Use the seed to reproduce a fixed experiment, not to force the statistical result to equal its theoretical expectation.
 
-## Turn phase into a visible outcome
+## Phase interference
 
 ```qode
 qubit wave;

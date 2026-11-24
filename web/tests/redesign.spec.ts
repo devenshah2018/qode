@@ -1,4 +1,15 @@
+import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
+const bellSource = readFileSync(new URL('../../examples/bell.qc', import.meta.url), 'utf8');
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript((source) => {
+    if (!localStorage.getItem('qode.workspace.v1'))
+      localStorage.setItem(
+        'qode.workspace.v1',
+        JSON.stringify({ source, seed: '42', shots: 1024 }),
+      );
+  }, bellSource);
+});
 const status = (page: Page) => page.locator('.controls [role=status]');
 async function experiment(page: Page, source: string) {
   await page.goto('/docs/');
@@ -49,7 +60,7 @@ test('documentation searches content, deep-links, and reloads without an engine'
   page.on('request', (request) => requests.push(request.url()));
   await page.goto('/docs/');
   await page.getByRole('searchbox', { name: 'Search documentation' }).fill('Fredkin');
-  await page.locator('.doc-search-results a').filter({ hasText: 'Every quantum gate' }).click();
+  await page.locator('.doc-search-results a').filter({ hasText: 'Gate reference' }).click();
   await expect(page.getByRole('heading', { name: 'Gate reference', exact: true })).toBeVisible();
   await page
     .getByRole('complementary', { name: 'On this page' })
@@ -78,18 +89,16 @@ test('skip link and repeated section navigation preserve the docs route', async 
   await expect(page.getByRole('heading', { name: 'Rotations', exact: true })).toBeInViewport();
 });
 
-test('all chapters render and complete Qode snippets launch runnable experiments', async ({
-  page,
-}) => {
+test('all reference pages render and Qode snippets launch runnable programs', async ({ page }) => {
   await page.goto('/docs/');
   const links = await page
-    .locator('nav[aria-label="Documentation chapters"] a')
+    .locator('nav[aria-label="Documentation pages"] a')
     .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')!));
-  expect(links).toHaveLength(17);
+  expect(links).toHaveLength(10);
   for (const href of links) {
     await page.goto(`/docs/${href}`);
     await expect(page.locator('#doc-title')).toBeVisible();
-    await expect(page.getByText('CHAPTER NOT FOUND', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('PAGE NOT FOUND', { exact: true })).toHaveCount(0);
   }
   await page.goto('/docs/#patterns');
   await page.getByRole('link', { name: 'Open in workbench', exact: true }).first().click();
@@ -210,7 +219,7 @@ test('stepping reveals execution lines below the editor viewport', async ({ page
   await page.getByRole('button', { name: 'Step', exact: true }).click();
   await expect(status(page)).toContainText('step 1');
   await expect(page.locator('.executing-line')).toContainText('x q;');
-  expect(await editor.evaluate((node) => node.scrollTop)).toBeGreaterThan(before);
+  await expect.poll(() => editor.evaluate((node) => node.scrollTop)).toBeGreaterThan(before);
 });
 
 test('mobile navigation, documentation menu and keyboard tabs fit', async ({ page }) => {
@@ -218,8 +227,8 @@ test('mobile navigation, documentation menu and keyboard tabs fit', async ({ pag
   await page.goto('/docs/');
   await page.getByRole('button', { name: 'Contents', exact: true }).click();
   await page.getByRole('searchbox', { name: 'Search documentation' }).fill('feed-forward');
-  await page.locator('.doc-search-results a').filter({ hasText: 'Circuit patterns' }).click();
-  await expect(page.getByRole('heading', { name: 'Circuit patterns', exact: true })).toBeVisible();
+  await page.locator('.doc-search-results a').filter({ hasText: 'Code examples' }).click();
+  await expect(page.getByRole('heading', { name: 'Code examples', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('link', { name: 'Workbench', exact: true }).click();
   await expect(status(page)).toContainText('Ready');
@@ -253,4 +262,21 @@ test('a same-page shared URL imports fresh code instead of retaining the prior s
   await expect(page.getByRole('button', { name: 'Back', exact: true })).toBeDisabled();
   await run(page);
   await expect(page.locator('.amplitude').first()).toContainText('50.00');
+});
+
+test('user reference excludes architecture and maintainer pages and exposes compiler help', async ({
+  page,
+}) => {
+  await page.goto('/docs/');
+  const navigation = page.getByRole('navigation', { name: 'Documentation pages' });
+  await expect(navigation).not.toContainText(
+    /architecture|deployment|verification|contributing|release/i,
+  );
+  await navigation.getByRole('link', { name: 'Compiler', exact: true }).click();
+  await expect(page.locator('#doc-title')).toHaveText('Compiler reference');
+  await expect(page.locator('.doc-article')).toContainText('without executing');
+  await page.getByRole('searchbox', { name: 'Search documentation' }).fill('worker lifecycle');
+  await expect(page.locator('.doc-search-results a')).toHaveCount(0);
+  await page.goto('/docs/#web-architecture');
+  await expect(page.locator('#doc-title')).toHaveText('Page not found');
 });

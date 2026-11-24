@@ -1,5 +1,16 @@
+import { readFileSync } from 'node:fs';
 import { Buffer } from 'node:buffer';
 import { test, expect, type Page } from '@playwright/test';
+const bellSource = readFileSync(new URL('../../examples/bell.qc', import.meta.url), 'utf8');
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript((source) => {
+    if (!localStorage.getItem('qode.workspace.v1'))
+      localStorage.setItem(
+        'qode.workspace.v1',
+        JSON.stringify({ source, seed: '42', shots: 1024 }),
+      );
+  }, bellSource);
+});
 async function ready(page: Page) {
   await page.goto('./');
   await expect(page.getByRole('status').first()).toContainText('Ready');
@@ -39,7 +50,7 @@ test('steps, reverses measurement, and replays the identical state', async ({ pa
 });
 test('samples Bell correlations and exports all counts', async ({ page }) => {
   await ready(page);
-  await page.getByRole('button', { name: 'Sample' }).click();
+  await page.getByRole('button', { name: 'Sample', exact: true }).click();
   await expect(page.getByTestId('histogram')).toBeVisible();
   const outcomes = await page.locator('.histogram-row code').allTextContents();
   expect(outcomes.sort()).toEqual(['00', '11']);
@@ -53,7 +64,7 @@ test('reports syntax errors and recovers after an edit', async ({ page }) => {
   await ready(page);
   await edit(page, 'qubit a;\nbogus a;');
   await page.getByRole('button', { name: 'Run', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('Line 2:1');
+  await expect(page.getByRole('alert')).toContainText('main.qc:2:1');
   await edit(page, 'qubit a; h a; h a;');
   await page.getByRole('button', { name: 'Run', exact: true }).click();
   await expect(page.getByRole('status').first()).toContainText('Execution complete');
@@ -98,6 +109,7 @@ test('loads a shared Unicode program, autosaves, and imports files', async ({ pa
   await expect(page.getByRole('status').first()).toContainText('Execution complete');
   await page.getByRole('tab', { name: 'Output (1)', exact: true }).click();
   await expect(page.locator('.observation')).toContainText('Hello λ world');
+  page.once('dialog', (dialog) => dialog.accept());
   await page.locator('input[type=file]').setInputFiles({
     name: 'import.qc',
     mimeType: 'text/plain',
@@ -117,6 +129,7 @@ test('mobile layout fits and all examples execute', async ({ page }) => {
     'Grover search',
     'Teleportation',
   ]) {
+    await page.locator('.template-menu summary').click();
     await page.getByRole('button', { name: new RegExp(title) }).click();
     await page.getByRole('button', { name: 'Run', exact: true }).click();
     await expect(page.getByRole('status').first()).toContainText('Execution complete');

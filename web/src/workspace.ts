@@ -1,7 +1,7 @@
-import { examples } from './examples';
 export type Workspace = { source: string; seed: string; shots: number };
 const STORE = 'qode.workspace.v1';
-const defaultWorkspace: Workspace = { source: examples[0].source, seed: '42', shots: 1024 };
+export const EMPTY_SOURCE = '// main.qc\n\n';
+const defaultWorkspace: Workspace = { source: EMPTY_SOURCE, seed: '42', shots: 1024 };
 function normalize(value: unknown, strict: boolean): Workspace | undefined {
   if (!value || typeof value !== 'object') return;
   const v = value as Partial<Workspace>;

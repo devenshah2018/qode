@@ -1,6 +1,6 @@
 # Qode
 
-**A small quantum language that makes every step visible.**
+**A quantum language with a browser IDE and a C11 runtime.**
 
 **[Try it](https://qode-olive.vercel.app/)** · **[Run locally](#browser-playground)** · **[Read the architecture](docs/ARCHITECTURE.md)**
 
@@ -29,7 +29,7 @@ The joint state is `( |00⟩ + |11⟩ ) / √2`. Sampling produces only `00` and
 
 ![Live Qode debugger: Hadamard creates superposition, CX entangles the pair, inspection records the state, and measurement collapses it](docs/playground-demo.gif)
 
-Choose **Entanglement** in the [playground](https://qode-olive.vercel.app/), then press **Step**:
+Choose **Templates → Entanglement** in the [IDE](https://qode-olive.vercel.app/), then press **Step**:
 
 1. **H, then CX:** the joint state has equal probability on `00` and `11`.
 2. **Inspect:** record the complex amplitudes without changing the state.
@@ -73,7 +73,8 @@ Open the printed Local URL. The workbench lives at `/` and its searchable docume
 
 The playground includes:
 
-- A CodeMirror editor with source-line highlighting, circuit diagram, Run, Step, Back, Reset, and Stop.
+- A blank-file CodeMirror editor, optional templates, syntax hover help (also F1), Compile validation, diagnostics, print console, build log, and Run, Step, Back, Reset, and Stop.
+- Collapsible Circuit, State, and Sample panels that share the available workspace without discarding runtime state.
 - Complex amplitudes, numerical phases, probabilities, classical bits, and reduced-state Bloch vectors that correctly label mixed qubits.
 - Seeded sampling, local autosave, `.qc` import/export, JSON export, and share links containing code and settings.
 - Guided superposition, interference, Bell, GHZ, Grover, and teleportation examples.
@@ -132,6 +133,10 @@ On the recorded arm64 development machine, 1,000 gates at 12 qubits took about *
 - No user functions or general-purpose loops. Conditional blocks contain gates and nested conditions.
 
 ## Documentation
+
+The [online reference](https://qode-olive.vercel.app/docs/) shares the workbench’s visual system and provides searchable syntax, compiler, CLI, and debugging references.
+
+![Qode compiler reference using the workbench color theme](docs/documentation.png)
 
 [Language reference](docs/LANGUAGE.md) · [Debugger tutorial](docs/DEBUGGING.md) · [Embedding API](docs/EMBEDDING.md) · [Architecture](docs/ARCHITECTURE.md) · [Feature evidence](docs/FEATURES.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 

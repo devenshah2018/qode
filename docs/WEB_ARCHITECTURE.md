@@ -6,7 +6,7 @@ The browser app is a static, local-first application. It has two HTML entry poin
 
 Shared navigation, icons, type, spacing, color, and focus states establish a common visual system. The workbench's page component arranges learning examples, source, controls, the circuit, and the state inspector. Individual components own the circuit projection, Bloch diagram, observation rendering, and editor integration.
 
-The workbench controller owns the experiment settings and the worker lifecycle. Presentational components receive typed data and callbacks. They do not instantiate independent simulators, choose measurement outcomes, or reproduce gate math in JavaScript. This keeps every displayed quantum result tied to the same C engine as the CLI.
+The IDE controller owns the source buffer, bounded build log, execution settings and the worker lifecycle. Presentational components receive typed data and callbacks. They do not instantiate independent simulators, choose measurement outcomes, or reproduce gate math in JavaScript. This keeps every displayed quantum result tied to the same C engine as the CLI.
 
 ## Source to result
 
@@ -68,3 +68,17 @@ Separate HTML output makes `/docs/` directly addressable without a server-side r
 TypeScript strict checks run before production bundling. The editor and documentation renderer are split into page-specific assets. Fonts are bundled locally; there is no third-party font request. The npm lockfile pins dependency versions, and the license-generation step includes notices for runtime packages and the toolchain.
 
 Browser tests exercise transport controls, sampling, errors, file input, sharing, persistence, navigation, responsive layouts, documentation links, and recovery. Numerical correctness remains covered by native reference matrices and Qiskit differential tests; UI tests verify the presentation and lifecycle around those results.
+
+## IDE layout and compilation
+
+A blank file is the first-run default; templates are optional replacements. Source editing invalidates the old session immediately. The command bar exposes compile, run, step, back, reset, and stop. Compile invokes the existing validated instruction compiler without stepping; recompiling unchanged source preserves runtime position. The worker republishes program metadata for every explicit compile response.
+
+The lower console separates diagnostics, print output, and a build log capped at 100 entries. Diagnostics show filename, line, column, and source context. Circuit and state views remain tied to the same worker snapshot. Desktop panes fit the viewport and scroll independently; narrow layouts stack the editor and inspector.
+
+## Shared theme and editor help
+
+Both entry points load `site-theme.css` after the common foundation styles, sharing palette and navigation rules. Documentation retains its reading layout while the IDE adds workspace-specific geometry.
+
+Circuit, State, and Sample are independent disclosure panels: hidden bodies stay mounted so settings and selected views survive toggling. Flex sizing reallocates desktop space among expanded panels; mobile panels stack.
+
+CodeMirror hover tooltips use a bundled syntax-reference table and the editor syntax tree to exclude comments and strings. F1 opens the same help at the cursor; Escape dismisses it. Tooltip text uses DOM text nodes, and links target the local documentation entry point. No network request or simulation is needed for help.
