@@ -3,6 +3,8 @@ import { examples } from './examples';
 import { loadWorkspace, saveWorkspace, workspaceLink, consumeShare } from './workspace';
 import type { Action, EngineError, Program, Response, Samples, Snapshot } from './types';
 export function useWorkbench() {
+  const [logs, setLogs] = useState<{ kind: 'info' | 'error'; message: string }[]>([]);
+  const pending = useRef<Action>('compile');
   const [starting] = useState(loadWorkspace);
   const [source, setSource] = useState(() => starting.source),
     [seed, setSeed] = useState(() => starting.seed),
@@ -38,6 +40,7 @@ export function useWorkbench() {
   const execute = useCallback((action: Action) => {
     if (active.current) return;
     active.current = true;
+    pending.current = action;
     if (!worker.current) {
       const w = new Worker(new URL('./worker.ts', import.meta.url), {
         type: 'module',
@@ -47,6 +50,10 @@ export function useWorkbench() {
         if (worker.current !== w) return;
         const data = event.data;
         if (data.type === 'error') {
+          setLogs((old) => [
+            ...old.slice(-99),
+            { kind: 'error', message: `${pending.current}: ${data.error.message}` },
+          ]);
           active.current = false;
           setSnapshot(undefined);
           setProgram(undefined);
@@ -57,6 +64,17 @@ export function useWorkbench() {
           return;
         }
         if (data.program) setProgram(data.program);
+        if (!data.busy)
+          setLogs((old) => [
+            ...old.slice(-99),
+            {
+              kind: 'info',
+              message:
+                pending.current === 'compile'
+                  ? `Compile successful · ${data.program?.instructions.length ?? 'validated'} instructions. No operations executed.`
+                  : `${pending.current}: ${data.samples ? `${data.samples.shots} shots` : `step ${data.snapshot.steps}${data.snapshot.done ? ' · complete' : ''}`}`,
+            },
+          ]);
         setSnapshot(data.snapshot);
         active.current = data.busy;
         setBusy(data.busy);
@@ -68,9 +86,11 @@ export function useWorkbench() {
           setStatus(
             data.busy
               ? 'Running'
-              : data.snapshot.done
-                ? 'Execution complete'
-                : `Ready · step ${data.snapshot.steps}`,
+              : pending.current === 'compile'
+                ? `Ready · step ${data.snapshot.steps}`
+                : data.snapshot.done
+                  ? 'Execution complete'
+                  : `Ready · step ${data.snapshot.steps}`,
           );
       };
       w.onerror = () => {
@@ -162,7 +182,7 @@ export function useWorkbench() {
       setShots(incoming.shots);
       saveWorkspace(values.current);
       consumeShare();
-      setToast(incoming.notice ?? 'Shared experiment loaded.');
+      setToast(incoming.notice ?? 'Shared source loaded.');
       execute('compile');
     };
     window.addEventListener('hashchange', importShare);
@@ -176,12 +196,14 @@ export function useWorkbench() {
       setToast(
         cause instanceof Error && cause.message.includes('too large')
           ? cause.message
-          : 'Clipboard unavailable. Use Export code to share this experiment.',
+          : 'Clipboard unavailable. Use Export code to share this file.',
       );
     }
   }
 
   return {
+    logs,
+    clearLogs: () => setLogs([]),
     sourceRevision,
     stop,
     tab,

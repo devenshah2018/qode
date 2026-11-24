@@ -1,65 +1,59 @@
-# Start with a Bell pair
+# Workspace reference
 
-Qode is a compact language for describing ideal quantum circuits. You write named qubits and gates; the workbench shows the joint quantum state after each instruction. The native CLI and the browser share the same C simulation engine.
+Use the workbench to edit `.qc` source, compile it, execute instructions, and inspect results. Source is saved in the current browser when local storage is available.
 
-You do not need a quantum account, a backend, or a Python environment to use the workbench. The simulation runs on your device. Begin with two qubits, then use the language reference as you explore.
+## Files
 
-## Your first experiment
+| Action | Behavior |
+| --- | --- |
+| New file | Replace the current buffer with a blank `main.qc` file. |
+| Import | Open a UTF-8 `.qc` file, up to 1 MiB. |
+| Export code | Download the current source as a `.qc` file. |
+| Share | Copy a URL containing the source, seed, and shot count. |
+| Templates | Replace the buffer with an optional predefined program. |
 
-This complete program entangles two qubits and records their measurements:
+Replacing custom source asks for confirmation. Export the source before replacing it if you need a separate copy. The workspace holds one source buffer; it is not a project filesystem.
+
+## Compile and execute
+
+Enter source in the editor, then select **Compile** to validate it without execution. **Run** executes to the end; **Step** executes one instruction. Both compile changed source automatically.
 
 ```qode
-qubit alice;
-qubit bob;
-bit a;
-bit b;
-
-h alice;
-cx alice, bob;
+qubit q;
+bit result;
+h q;
 inspect state;
-measure alice -> a;
-measure bob -> b;
+measure q -> result;
 ```
 
-Choose **Open in workbench** on the code block. Press **Step** once to apply H. The amplitudes of `|00⟩` and `|01⟩` become approximately 0.707. Press Step again to apply CX: the `|01⟩` branch moves to `|11⟩`. Each surviving branch has probability 0.5.
+This program records the state after H, then writes a measured 0 or 1 to `result`. View recorded inspections under **State → Output**, and the current bit value under **Classical bits**. See [Compiler](COMPILER.md) for validation and [Debugger & console](DEBUGGING.md) for execution controls.
 
-`inspect state` records this moment without disturbing it. The next two statements measure Alice and Bob. The joint state collapses to one branch, so the classical results agree: either both zero or both one.
+## Syntax help
 
-## Read the result correctly
+Hover a gate or keyword for its signature, description, example, and reference link. Press **F1** with the editor cursor on the word for the same help; **Escape** dismisses it. Comments, strings, and unknown names do not show keyword help.
 
-The first declared qubit occupies bit zero, at the **right** of a basis label. For Alice followed by Bob, `|10⟩` means Bob is one and Alice is zero. A basis label describes the whole register, not a particular named qubit.
+## Save and restore
 
-An amplitude is a complex number. Probability is its squared magnitude: real² + imaginary². An amplitude of approximately 0.707 has probability approximately 0.5, not 0.707. The inspector shows both quantities separately. The phase of a zero amplitude is undefined and is displayed as a dash.
+Source, seed, and shot count are saved locally when browser storage is available. Reloading restores those values but starts a new execution. Runtime position, checkpoints, and results are not saved across page navigation. Export source and results for durable copies.
 
-Open the **Qubits** tab after CX. Each qubit has purity 0.5 and a zero-length Bloch vector. This is expected: the complete Bell pair is pure, but either qubit viewed alone is mixed.
+Share URLs contain source and settings, not an execution checkpoint. Anyone with the link can read that source. Large programs should be shared as `.qc` files. Invalid share links leave the saved source intact.
 
-## Run, step, or sample
+## Keyboard shortcuts
 
-- **Run** executes from the current instruction to the end. It does not restart a partially stepped experiment.
-- **Step** executes one engine instruction. Declarations and comments are compiled before execution and do not consume steps.
-- **Back** restores a previous execution step, including its classical bits and random generator state. Repeating the measurement produces the same result.
-- **Reset** returns the entire experiment to zero using the selected seed.
-- **Stop** destroys the current worker session. Start a fresh execution with Run or Reset; it cannot resume a destroyed checkpoint.
-- **Sample** repeats the program from its initial state and aggregates final classical-bit results. It does not continue the partially stepped state.
+| Shortcut | Action |
+| --- | --- |
+| Ctrl/Cmd + Shift + Enter | Compile |
+| Ctrl/Cmd + Enter | Run |
+| F1 | Syntax help at the cursor |
+| Escape | Dismiss syntax help |
+| Ctrl/Cmd + Z | Undo a source edit |
 
-Sample 1,024 shots of the Bell program. Only `00` and `11` should appear; their counts will usually be close, but need not be identical. Increasing shots improves the estimate of the probability distribution. The results depend on the experiment, seed, and execution mode.
+## Run locally
 
-## Change one thing
-
-Replace `cx alice, bob;` with `x bob;` and run again. Alice remains in superposition while Bob is fixed to one. You should now see `10` and `11` rather than `00` and `11`. This is a useful way to separate independent randomness from entanglement.
-
-For interference, choose the Interference example: two Hadamards return the register to zero. For a more complete workflow, choose Teleportation and compare the message's initial reduced state with Bob's final reduced state under Output.
-
-## Save and share
-
-The workbench autosaves source, seed, and shot count in this browser when storage is available. It does not synchronize files between devices. Export code for a portable `.qc` file; export results for JSON evidence of a particular execution or sample.
-
-Share creates a URL fragment containing code and settings. It is not a server-stored project and does not contain a resumable execution checkpoint. Opening a share starts a fresh experiment. Malformed shares produce a notice and keep the saved workspace.
-
-## Run from the repository
+From a checkout with the documented prerequisites installed:
 
 ```sh
 ./start.sh
 ```
 
-The launcher installs missing or changed frontend dependencies, builds the WebAssembly engine, and starts the development server. Node, npm, CMake, Make, and Emscripten must be installed. Use `./start.sh --open` to open a browser or `./start.sh --port 5180` to choose a port. The app's default path is `/`; documentation is at `/docs/`.
+Use `./start.sh --open` to open a browser, or `./start.sh --port 5180` to choose a port. See the repository README for installation requirements. The workbench is at `/` and documentation at `/docs/`.

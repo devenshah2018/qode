@@ -1,3 +1,4 @@
+import { qodeHover, showSyntaxHelp, dismissSyntaxHelp } from './syntaxHelp';
 import { useEffect, useRef } from 'react';
 import { Compartment, EditorState, StateEffect, StateField } from '@codemirror/state';
 import {
@@ -65,35 +66,35 @@ const theme = EditorView.theme(
   {
     '&': {
       height: '100%',
-      backgroundColor: '#ffffff',
-      color: '#242424',
+      backgroundColor: '#191b1c',
+      color: '#d7d9d6',
       fontSize: '14px',
     },
     '.cm-scroller': {
       fontFamily: '"JetBrains Mono Variable", "SFMono-Regular", Consolas, monospace',
       lineHeight: '1.8',
     },
-    '.cm-content': { padding: '18px 0', caretColor: '#a92f20' },
-    '.cm-gutters': { background: '#ffffff', color: '#727272', border: 'none' },
+    '.cm-content': { padding: '18px 0', caretColor: '#d8e7a5' },
+    '.cm-gutters': { background: '#191b1c', color: '#858c8b', border: 'none' },
     '.cm-lineNumbers .cm-gutterElement': { padding: '0 18px 0 12px' },
-    '.cm-activeLine': { background: '#00000003' },
+    '.cm-activeLine': { background: '#ffffff04' },
     '.executing-line': {
-      background: '#fff0bc',
-      boxShadow: 'inset 3px 0 #be3524',
+      background: '#d8e7a512',
+      boxShadow: 'inset 3px 0 #c1d694',
     },
     '&.cm-focused': { outline: 'none' },
     '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
-      background: '#dedede',
+      background: '#444b43',
     },
   },
-  { dark: false },
+  { dark: true },
 );
 const colors = HighlightStyle.define([
-  { tag: tags.keyword, color: '#a92f20' },
-  { tag: tags.function(tags.variableName), color: '#242424' },
-  { tag: tags.string, color: '#3c614b' },
-  { tag: tags.comment, color: '#707070', fontStyle: 'italic' },
-  { tag: tags.number, color: '#855229' },
+  { tag: tags.keyword, color: '#d8e7a5' },
+  { tag: tags.function(tags.variableName), color: '#d7d9d6' },
+  { tag: tags.string, color: '#c6c4a5' },
+  { tag: tags.comment, color: '#929a96', fontStyle: 'italic' },
+  { tag: tags.number, color: '#d5b992' },
 ]);
 export function Editor({
   source,
@@ -101,6 +102,8 @@ export function Editor({
   line,
   onChange,
   onRun,
+  onCompile,
+  error = false,
   disabled,
 }: {
   source: string;
@@ -108,6 +111,8 @@ export function Editor({
   line: number;
   onChange: (source: string) => void;
   onRun: () => void;
+  onCompile: () => void;
+  error?: boolean;
   disabled: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null),
@@ -115,9 +120,11 @@ export function Editor({
   const appliedRevision = useRef(revision),
     editable = useRef(new Compartment());
   const change = useRef(onChange),
-    run = useRef(onRun);
+    run = useRef(onRun),
+    compile = useRef(onCompile);
   change.current = onChange;
   run.current = onRun;
+  compile.current = onCompile;
   useEffect(() => {
     const editor = new EditorView({
       parent: host.current!,
@@ -129,6 +136,7 @@ export function Editor({
           highlightActiveLine(),
           activeField,
           language,
+          qodeHover,
           syntaxHighlighting(colors),
           theme,
           editable.current.of([
@@ -136,6 +144,15 @@ export function Editor({
             EditorState.readOnly.of(disabled),
           ]),
           keymap.of([
+            { key: 'F1', run: showSyntaxHelp },
+            { key: 'Escape', run: dismissSyntaxHelp },
+            {
+              key: 'Mod-Shift-Enter',
+              run: () => {
+                compile.current();
+                return true;
+              },
+            },
             {
               key: 'Mod-Enter',
               run: () => {
@@ -149,6 +166,7 @@ export function Editor({
           ]),
           EditorView.contentAttributes.of({
             'aria-label': 'Qode source code',
+            'aria-description': 'F1 shows syntax help at the cursor. Escape dismisses it.',
             spellcheck: 'false',
           }),
           EditorView.updateListener.of((update) => {
@@ -194,5 +212,5 @@ export function Editor({
       ]),
     });
   }, [disabled]);
-  return <div className="editor" ref={host} />;
+  return <div className={error ? 'editor editor-error' : 'editor'} ref={host} />;
 }

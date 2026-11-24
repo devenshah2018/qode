@@ -171,8 +171,8 @@ export default function Docs() {
           aria-label="Documentation navigation"
         >
           <div className="docs-sidebar-heading">
-            <span className="eyebrow">THE QODE HANDBOOK</span>
-            <h2>Documentation.</h2>
+            <span className="eyebrow">QODE REFERENCE</span>
+            <h2>Documentation</h2>
           </div>
           <label className="doc-search">
             <Icon name="search" />
@@ -189,7 +189,7 @@ export default function Docs() {
           {query.trim() ? (
             <div className="doc-search-results">
               <p className="caption" role="status">
-                {results.length} {results.length === 1 ? 'chapter' : 'chapters'} found
+                {results.length} {results.length === 1 ? 'page' : 'pages'} found
               </p>
               {results.map((a) => (
                 <a
@@ -206,13 +206,13 @@ export default function Docs() {
               ))}
               {!results.length && (
                 <p className="caption">
-                  No chapters match “{query}”. Try gate names, measurement, or architecture.
+                  No pages match “{query}”. Try a command, gate name, or error message.
                 </p>
               )}
             </div>
           ) : (
-            <nav aria-label="Documentation chapters">
-              {['Start here', 'Language', 'Build with Qode', 'Reference'].map((group) => (
+            <nav aria-label="Documentation pages">
+              {['Workspace', 'Language', 'Reference'].map((group) => (
                 <div className="docs-nav-group" key={group}>
                   <h3>{group}</h3>
                   {articles
@@ -236,7 +236,7 @@ export default function Docs() {
             <span>
               Qode 1.0
               <br />
-              <small>Small language. Visible mechanics.</small>
+              <small>Language and tool reference.</small>
             </span>
           </div>
         </aside>
@@ -249,10 +249,8 @@ export default function Docs() {
                 <span>{article.group}</span>
               </div>
               <div className="doc-reading-meta">
-                <span>GUIDE</span>
-                <span>
-                  {Math.max(1, Math.ceil(article.body.split(/\s+/).length / 200))} min read
-                </span>
+                <span>REFERENCE</span>
+                <span>Qode 1.0</span>
               </div>
               <div className="doc-article" key={article.id}>
                 <Markdown
@@ -301,10 +299,10 @@ export default function Docs() {
                   {article.body}
                 </Markdown>
               </div>
-              <nav className="doc-pagination" aria-label="Adjacent chapters">
+              <nav className="doc-pagination" aria-label="Adjacent pages">
                 {index > 0 ? (
                   <a href={`#${articles[index - 1].id}`}>
-                    <span>Previous chapter</span>
+                    <span>Previous page</span>
                     <strong>{articles[index - 1].title}</strong>
                   </a>
                 ) : (
@@ -312,7 +310,7 @@ export default function Docs() {
                 )}
                 {index < articles.length - 1 && (
                   <a href={`#${articles[index + 1].id}`}>
-                    <span>Continue reading</span>
+                    <span>Next page</span>
                     <strong>{articles[index + 1].title}</strong>
                   </a>
                 )}
@@ -330,13 +328,13 @@ export default function Docs() {
             </>
           ) : (
             <section className="doc-not-found">
-              <span className="eyebrow">CHAPTER NOT FOUND</span>
+              <span className="eyebrow">PAGE NOT FOUND</span>
               <h1 id="doc-title" tabIndex={-1}>
-                Let's find your place.
+                Page not found
               </h1>
-              <p>That documentation chapter does not exist.</p>
+              <p>That reference page does not exist.</p>
               <a className="primary button-link" href="#getting-started">
-                Start with the basics
+                Open documentation
               </a>
             </section>
           )}
@@ -356,8 +354,8 @@ export default function Docs() {
           </nav>
           <a className="docs-workbench-card" href={import.meta.env.BASE_URL}>
             <Icon name="orbit" />
-            <strong>Put it into practice.</strong>
-            <span>Run the examples and inspect each operation.</span>
+            <strong>Qode workbench</strong>
+            <span>Edit, compile, and debug your source.</span>
             <span className="docs-card-action">Open workbench</span>
           </a>
         </aside>

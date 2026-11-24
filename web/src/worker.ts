@@ -186,6 +186,7 @@ async function handle(request: Request) {
     send(false, result);
     return;
   }
+  if (request.action === 'compile') publishProgram = true;
   send();
 }
 let queue = Promise.resolve();

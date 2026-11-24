@@ -31,7 +31,7 @@ The local environment is macOS 26.5.1, arm64 Apple M4, Apple Clang 17, Node 22.1
 | Tolerances | State/probability error <1e-10; 10,000-gate normalization drift <1e-9 |
 | Native/Wasm parity | 24 seeded circuit cases, plus matching terminal and dynamic sample counts |
 | Deployment | Five packaging checks: required pages/engine/licenses, root paths, artifact tampering, routing, and cache/MIME policy |
-| Browser | 72 checks across Chromium, Firefox, and WebKit, including documentation, mobile layouts, keyboard access, automated WCAG 2.1 AA checks, and worker cancellation |
+| Browser | 99 checks across Chromium, Firefox, and WebKit, including documentation, mobile layouts, keyboard access, automated WCAG 2.1 AA checks, and worker cancellation |
 | Native UBSan | All CTest suites |
 | Wasm ASan/UBSan/LSan | Core regressions, 40,000 deterministic parser mutations, 400 allocation-failure schedules |
 | Static analysis | No diagnostics in seven implementation translation units |

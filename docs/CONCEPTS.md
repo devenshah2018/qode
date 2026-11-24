@@ -1,70 +1,47 @@
-# The quantum model
+# State and results reference
 
-Qode simulates ideal, noiseless quantum states. It helps you inspect the mathematical model of a circuit; it does not connect to hardware or claim a computational speedup over classical computing.
+The State panel displays the current execution. `inspect` statements record separate snapshots available under Output. Inspection does not change the simulated state; measurement does.
 
-## One state, many amplitudes
+## Basis ordering
 
-A qubit has two basis states, `|0⟩` and `|1⟩`. A pure state is described by complex amplitudes α and β:
+The first declared qubit is bit zero, displayed on the right. With declarations `qubit a; qubit b;`, basis `|10⟩` means `b=1` and `a=0`. Each basis label describes the complete register.
 
-```text
-|ψ⟩ = α|0⟩ + β|1⟩
-|α|² + |β|² = 1
-```
+## Amplitudes
 
-For two qubits there are four amplitudes, one each for `|00⟩`, `|01⟩`, `|10⟩`, and `|11⟩`. For n qubits there are 2ⁿ. Qode stores the joint vector; it does not store a separate independent wavefunction for each qubit. This distinction makes entanglement possible.
+| Field | Meaning |
+| --- | --- |
+| Basis | Computational-basis label, with the highest-index qubit on the left. |
+| Amplitude | Complex value `re + im·i`. |
+| Probability | `re² + im²`, displayed as a percentage. |
+| Phase | Angle of the nonzero complex amplitude in degrees. A dash means undefined at zero amplitude. |
+| State norm | Sum of all basis probabilities. It should remain approximately 1. |
 
-## Amplitude, probability, and phase
+Relative phase affects later interference even when current probabilities match. Displayed numbers are rounded; JSON exports retain more precision. Values near 1 may differ slightly because of floating-point arithmetic.
 
-For an amplitude `a + bi`, probability is `a² + b²`. Phase is the angle of the complex number, usually calculated with `atan2(b, a)`. Phase is useful only for a nonzero amplitude. Absolute global phase does not change physical measurement outcomes; relative phase between branches can change interference.
+The panel shows at most 64 largest amplitude entries. Truncation is stated explicitly and does not truncate the simulated register. Norm and per-qubit values still refer to the full state.
 
-These two states have identical basis probabilities:
+## Classical bits
 
-```text
-|+⟩ = (|0⟩ + |1⟩) / √2
-|−⟩ = (|0⟩ − |1⟩) / √2
-```
+A declared bit shows `?` until measurement writes it. Measurement writes 0 or 1 and collapses the joint state to the selected branch. Repeated measurement in the same basis gives the same result unless another operation changes the qubit.
 
-They behave differently after H. H maps `|+⟩` to `|0⟩`, and `|−⟩` to `|1⟩`. Looking only at probability bars before H would miss the information carried by relative phase.
+## Qubits
 
-```qode
-qubit wave;
-h wave;
-z wave;
-inspect state;
-h wave;
-inspect probabilities;
-```
+Each qubit view shows its reduced-state Bloch vector `(x, y, z)` and purity. The probability of 0 is `(1+z)/2`; the probability of 1 is `(1−z)/2`.
 
-The final probability of one is 1, up to floating-point rounding. Remove Z and the final probability of zero becomes 1 instead.
+- **Pure:** purity is approximately 1; the vector lies on the sphere.
+- **Mixed:** purity is below 1; the vector lies inside the sphere. A qubit entangled with others can be mixed even when the whole register is pure.
+- A zero vector with purity 0.5 is a maximally mixed qubit, not a missing result.
 
-## Unitary gates preserve norm
+## Recorded output
 
-The state norm is the sum of every amplitude's squared magnitude. Ideal gates preserve it. Qode's ordinary gates update complex amplitudes without unconditionally renormalizing the vector, so numerical errors cannot be concealed by normalizing after each gate.
+`print` records text. `inspect state` records complex amplitudes, `inspect probabilities` records basis probabilities, and `inspect qubit name` records a per-qubit view. Each entry includes its source line and execution step. A recorded snapshot describes that step, not necessarily the current final state.
 
-The engine uses double precision. Values such as `0.9999999999999996` are expected floating-point representations of a normalized result. The UI rounds display values; exported JSON retains more precision. Use tolerances rather than exact decimal-string equality in your own analysis.
+## Sample counts
 
-## Entanglement is a property of the joint state
+The histogram counts final classical-bit results. Bit strings place the highest-index declared classical bit on the left. Only the 64 most frequent outcomes are displayed; JSON export includes all counts.
 
-A Bell state cannot be written as a product of two independent pure qubit states. Measurement outcomes are correlated: measuring Alice predicts Bob's result in the same basis.
+The seed makes a sampling sequence reproducible; it does not force observed frequencies to equal theoretical probabilities. Changing the circuit or execution mode can change the sampled sequence.
 
-This does not allow instantaneous communication. A user cannot choose a measurement outcome. Qode's statevector is an explicit classical simulation of the correlations, not a communications channel or a hardware measurement service.
+## Supported scope
 
-## Bloch vectors and reduced states
-
-A single qubit's reduced state can be represented by a Bloch vector `(x, y, z)`. For an isolated pure qubit, its vector has length one and lies on the sphere. For a mixed reduced state, its vector lies inside. The probabilities of zero and one are `(1+z)/2` and `(1−z)/2`.
-
-Purity is `(1+x²+y²+z²)/2`. It ranges from 0.5 for the maximally mixed qubit to 1 for a pure qubit. A zero vector in an entangled pair is meaningful; it is not an empty or broken visualization.
-
-The sphere is an orthographic drawing. Its vector endpoint is projected with orthonormal camera axes so valid states remain inside its outline. The exact numeric coordinates are shown beside it and available to assistive technology.
-
-## Inspection and measurement differ
-
-Inspection can expose simulated amplitudes because the engine explicitly stores them. A physical quantum device cannot reveal an unknown statevector through a single observation. Treat inspection as a debugging capability of a classical simulator.
-
-Measurement samples an outcome and changes the joint state. Only amplitudes consistent with the selected bit survive, and the surviving branch is normalized. Measuring again in the same basis returns the same outcome unless an intervening operation changes that qubit.
-
-## Size grows exponentially
-
-Each amplitude uses 16 bytes. A complete n-qubit state therefore uses `16 × 2ⁿ` bytes before sampling buffers, observations, JSON, and checkpoints. Adding a qubit doubles the main state, rather than adding a constant amount of memory.
-
-Use a small circuit while learning. Browser runs support up to 16 qubits, interactive stepping up to 12, and the native engine up to 24. These are resource boundaries, not a claim that every large program runs quickly on every device.
+Qode simulates ideal, noiseless circuits. It does not execute on quantum hardware. Browser execution supports 16 qubits, browser stepping 12, and the native CLI 24. These limits apply in addition to the source and instruction limits in the language reference.

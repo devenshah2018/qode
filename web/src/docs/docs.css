@@ -12,8 +12,8 @@
 }
 .docs-sidebar {
   position: sticky;
-  top: 76px;
-  height: calc(100vh - 76px);
+  top: 48px;
+  height: calc(100vh - 48px);
   overflow-y: auto;
   border-right: 1px solid var(--border);
   padding: 34px 24px 24px 0;
@@ -29,7 +29,7 @@
 .doc-search {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #aaa99f;
+  border-bottom: 1px solid #69736d;
   height: 40px;
   gap: 8px;
   margin: 25px 0 30px;
@@ -202,7 +202,7 @@
 .doc-article li {
   font-size: 16px;
   line-height: 1.85;
-  color: #41413c;
+  color: #c6cec5;
 }
 .doc-article p {
   margin: 17px 0;
@@ -225,7 +225,7 @@
 }
 .doc-article a {
   color: var(--accent);
-  text-decoration-color: #c68c82;
+  text-decoration-color: #718465;
 }
 .doc-article a:hover {
   text-decoration-color: var(--accent);
@@ -235,7 +235,7 @@
 .doc-table code {
   font-size: 12px;
   color: var(--ink);
-  background: #f2f2ee;
+  background: #292f29;
   padding: 2px 4px;
   overflow-wrap: anywhere;
 }
@@ -243,12 +243,12 @@
   border-left: 2px solid var(--accent);
   margin: 24px 0;
   padding: 1px 20px;
-  background: #fafaf7;
+  background: #202622;
 }
 .doc-code {
   margin: 24px 0;
   border: 1px solid var(--border);
-  background: #f7f7f4;
+  background: #151a17;
   overflow: hidden;
   position: relative;
 }
@@ -311,7 +311,7 @@
 }
 .copy-message {
   display: block;
-  background: #eeeee8;
+  background: #303a2d;
   padding: 8px 14px;
   font-size: 12px;
 }
@@ -335,12 +335,12 @@
   border-bottom: 1px solid var(--border);
   text-align: left;
   vertical-align: top;
-  color: #41413c;
+  color: #c6cec5;
 }
 .doc-table th {
   font-weight: 600;
   color: var(--ink);
-  background: #f7f7f4;
+  background: #151a17;
   white-space: nowrap;
 }
 .doc-table tr:last-child td {
@@ -398,9 +398,9 @@
 .doc-toc {
   padding: 43px 0 30px 14px;
   position: sticky;
-  top: 76px;
+  top: 48px;
   align-self: start;
-  max-height: calc(100vh - 76px);
+  max-height: calc(100vh - 48px);
   overflow: auto;
   scrollbar-width: thin;
 }
@@ -485,7 +485,7 @@
   display: inline-flex;
   padding: 12px 16px;
   text-decoration: none;
-  color: #fff;
+  color: #191b1c;
   background: var(--ink);
 }
 .docs-mobile-bar {
@@ -521,8 +521,8 @@
     font-size: 12px;
     color: var(--muted);
     position: sticky;
-    top: 68px;
-    background: #fff;
+    top: 48px;
+    background: #191b1c;
     z-index: 20;
   }
   .docs-mobile-bar button {
@@ -537,13 +537,13 @@
   .docs-sidebar {
     display: none;
     position: fixed;
-    top: 124px;
+    top: 104px;
     left: 0;
     bottom: 0;
     width: min(350px, 100%);
-    height: calc(100dvh - 124px);
+    height: calc(100dvh - 104px);
     max-height: none;
-    background: #fff;
+    background: #191b1c;
     z-index: 30;
     padding: 25px 24px;
     border-right: 1px solid var(--ink);
@@ -622,4 +622,28 @@
   .doc-reading-meta {
     font-size: 12px;
   }
+}
+
+.docs-shell .topbar {
+  height: 48px;
+}
+.docs-shell {
+  background: var(--bg);
+  min-height: 100dvh;
+}
+.docs-workbench-card strong {
+  color: var(--text);
+}
+.button-link {
+  background: #c3d79b;
+  color: #182013;
+}
+.doc-code-toolbar .code-run:hover {
+  color: #e0efca;
+}
+.doc-code-toolbar button:hover {
+  background: #303735;
+}
+.docs-sidebar {
+  scrollbar-color: #69736d transparent;
 }
